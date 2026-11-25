@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ชีวิตดีๆ ที่กรุงเทพฯ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@500;600&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, playful, hopeful city life with a sense of history
+   IDEA: a Bangkok life card plus a yearly newspaper strip — each year has its พ.ศ. and headlines
+   PICTURE: sunset skyline with Wat Arun spire, towers and a BTS train gliding across
+   COLOUR and TYPE: taxi pink dominant, deep plum support, mango accent; Mitr headings, Sarabun body
+   LAYOUT: skyline band with title, then life card left and year/news + choices + timeline right; stacks under 760px */
+:root{color-scheme:light dark;--bg:light-dark(#fff6f1,#1a0f1e);--card:light-dark(#fff,#28172e);--ink:light-dark(#2b0f30,#fbeef4);--mut:light-dark(#7d5b74,#c7a6bd);--pink:#e6337a;--plum:light-dark(#4a1a4f,#f4b8d2);--mango:#ffc93c;--line:light-dark(#f1dbe5,#43284a);--soft:light-dark(#fdebf2,#351f3c);--paper:light-dark(#fff8e2,#2f2420)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Sarabun,system-ui,sans-serif;overflow-x:clip}
+h1,h2,.nm,.age b,button,.yr b{font-family:Mitr,Sarabun,sans-serif}
+.hero{position:relative;height:clamp(190px,26vw,270px);overflow:hidden;background:linear-gradient(#ff8fb3,#ffb36b 70%,#ffd27a)}
+.hero svg{position:absolute;inset:0;width:100%;height:100%}
+.hero .tt{position:absolute;left:max(5vw,16px);right:16px;top:clamp(18px,3vw,34px);color:#3a0d3d}
+h1{margin:0;font-size:clamp(32px,5vw,50px);line-height:1.05;font-weight:600;text-wrap:balance}
+.hero p{margin:6px 0 0;font-size:16px;max-width:32em}
+.train{animation:ride 14s linear infinite}
+@keyframes ride{from{transform:translateX(-260px)}to{transform:translateX(1300px)}}
+@media(prefers-reduced-motion:reduce){.train{animation:none;transform:translateX(420px)}}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,14px) 48px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:22px;align-items:start}
+@media(max-width:760px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 10px 30px -18px #6a1a4a55}
+.id{background:linear-gradient(160deg,var(--card) 60%,var(--soft))}
+.left{display:grid;gap:18px}
+.who{display:flex;gap:14px;align-items:center}
+.av{flex:none;width:48px;height:62px;border-radius:12px;overflow:hidden}
+.av svg{display:block;width:100%;height:100%}
+.av.lg{width:104px;height:135px;border-radius:18px;box-shadow:0 0 0 4px var(--card),0 0 0 6px var(--pink)}
+.av.dead{filter:grayscale(1);opacity:.55}
+.pp{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.pp:last-child{border-bottom:0}
+.pn{font-weight:700;font-size:16px;line-height:1.3}
+.pd{font-size:14px;color:var(--mut);line-height:1.45}
+.rel{display:inline-block;font-size:12px;border-radius:99px;padding:0 8px;font-weight:600;white-space:nowrap}
+.rel.c4{background:var(--pink);color:#fff}.rel.c3{background:var(--soft);color:var(--ink)}.rel.c2{background:var(--line);color:var(--mut)}.rel.c1{border:1px dashed var(--mut);color:var(--mut)}
+.fh{font-family:Mitr,sans-serif;font-size:13px;color:var(--mut);margin:12px 0 0}
+.story{background:var(--soft);border-radius:16px;padding:16px 18px;margin-bottom:16px}
+.sy{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
+.sy b{font-family:Mitr,sans-serif;font-size:30px;line-height:1;color:var(--pink);font-weight:600}
+.st{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.st li{font-size:18px;line-height:1.45;padding-left:16px;position:relative}
+.st li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--pink)}
+.st li.bad::before{background:var(--mut)}.st li.big{font-weight:700}
+.newsline{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:13px;color:var(--mut);display:grid;gap:3px}
+.idtop{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--mut);border-bottom:1px dashed var(--line);padding-bottom:10px;margin-bottom:12px}
+.chip{background:var(--pink);color:#fff;border-radius:99px;padding:2px 10px;font-size:13px;white-space:nowrap}
+.nm{font-size:28px;line-height:1.1}
+.mut{color:var(--mut);font-size:15px}
+.age{display:flex;align-items:baseline;gap:8px;margin:12px 0}
+.age b{font-size:clamp(44px,7vw,60px);line-height:1;color:var(--pink);font-weight:600}
+.rows{display:grid;gap:6px;margin:8px 0 16px}
+.row{display:flex;justify-content:space-between;gap:10px;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.row span:last-child{text-align:right;font-weight:600}
+.money{white-space:nowrap}
+.bar{margin:9px 0}.bar label{display:flex;justify-content:space-between;font-size:14px}
+.track{height:10px;border-radius:9px;background:var(--soft);overflow:hidden}
+.fill{height:100%;border-radius:9px;background:var(--pink);transition:width .4s}
+.fill.y{background:var(--mango)}.fill.p{background:var(--plum)}
+h2{margin:0 0 12px;font-size:21px;line-height:1.3;font-weight:500}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+button,select,input{font-size:16px;border-radius:14px;min-height:44px}
+button{cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--mango);outline-offset:2px}
+.opt{text-align:left;background:var(--soft);color:var(--ink);border:1.5px solid transparent;padding:12px 14px;font-weight:500}
+.opt small{display:block;font-family:Sarabun,sans-serif;font-weight:400;font-size:14px;color:var(--mut);margin-top:2px}
+.opt:hover:not(:disabled){border-color:var(--pink)}
+.opt:disabled{opacity:.45;cursor:not-allowed}
+.main{background:var(--pink);color:#fff;border:0;padding:12px 26px;font-weight:500}
+.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);padding:8px 16px}
+.ghost[aria-pressed=true]{background:var(--mango);color:#2b0f30;border-color:var(--mango)}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;color:var(--ink);padding:0 12px;font-size:14px}
+.seg button[aria-pressed=true]{background:var(--plum);color:var(--card)}
+.chk{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);min-height:44px}
+.chk input{min-height:0;width:18px;height:18px;accent-color:var(--pink)}
+.yr{display:flex;gap:14px;align-items:stretch;background:var(--paper);border-radius:14px;padding:12px 14px;margin-bottom:14px;border:1px solid var(--line)}
+.yr b{font-size:30px;line-height:1;color:var(--pink);font-weight:600;white-space:nowrap}
+.yr .lab{font-size:13px;color:var(--mut)}
+.yr ul{margin:0;padding:0;list-style:none;font-size:15px;display:grid;gap:3px;align-content:center}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 6px;margin-right:6px;background:var(--plum);color:var(--card);white-space:nowrap}
+.tag.b{background:var(--pink);color:#fff}.tag.c{background:var(--mango);color:#2b0f30}
+.log{list-style:none;margin:0;padding:0;max-height:460px;overflow:auto}
+.log li{display:grid;grid-template-columns:5.6em minmax(0,1fr);gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.log .a{color:var(--mut);font-size:13px;padding-top:2px;line-height:1.35}
+.log .good{color:light-dark(#9b1d57,#ff9cc4)}.log .bad{color:var(--mut)}.log .big{font-weight:700}
+.log li.n{font-size:13px;color:var(--mut);padding:5px 0}.log li.n .a{font-size:12px}
+.end{background:var(--plum);color:var(--card);border-radius:14px;padding:16px;margin-bottom:12px}
+.end b{font-family:Mitr,sans-serif;font-size:24px;font-weight:500;display:block}
+.past{display:grid;gap:6px;margin-top:10px;font-size:14px}
+.past div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding-bottom:5px}
+.start{display:grid;gap:12px}
+.start .r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.start input{width:9em;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:0 12px}
+.note{font-size:13px;color:var(--mut);margin-top:12px}
+</style>
+</head>
+<body>
+<header class="hero">
+<svg viewBox="0 0 1200 270" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+ <defs>
+  <linearGradient id="riv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8457a"/><stop offset="1" stop-color="#5a1d55"/></linearGradient>
+  <pattern id="win" width="14" height="16" patternUnits="userSpaceOnUse"><rect x="3" y="4" width="6" height="7" fill="#ffd27a" opacity=".55"/></pattern>
+ </defs>
+ <circle cx="930" cy="120" r="58" fill="#fff1c4" opacity=".9"/>
+ <g fill="#c2507f" opacity=".55"><rect x="520" y="70" width="60" height="160"/><rect x="600" y="40" width="44" height="190"/><rect x="1040" y="80" width="70" height="150"/><rect x="760" y="95" width="56" height="135"/></g>
+ <g fill="#6b2160"><rect x="470" y="110" width="70" height="120"/><rect x="560" y="85" width="52" height="145"/><rect x="660" y="60" width="64" height="170"/><rect x="740" y="120" width="80" height="110"/><rect x="980" y="100" width="58" height="130"/><rect x="1090" y="130" width="90" height="100"/></g>
+ <g fill="url(#win)"><rect x="470" y="110" width="70" height="120"/><rect x="660" y="60" width="64" height="170"/><rect x="980" y="100" width="58" height="130"/><rect x="1090" y="130" width="90" height="100"/></g>
+ <path d="M300 230 L300 200 L318 196 L326 150 L334 146 L340 95 L346 92 L352 40 L358 92 L364 95 L370 146 L378 150 L386 196 L404 200 L404 230Z" fill="#4a1448"/>
+ <path d="M240 230 L246 190 L256 186 L262 150 L268 186 L278 190 L284 230Z M420 230 L426 190 L436 186 L442 150 L448 186 L458 190 L464 230Z" fill="#4a1448"/>
+ <rect x="0" y="196" width="1200" height="6" fill="#3a0d3d"/>
+ <g fill="#3a0d3d"><rect x="80" y="202" width="8" height="40"/><rect x="380" y="202" width="8" height="40"/><rect x="680" y="202" width="8" height="40"/><rect x="980" y="202" width="8" height="40"/></g>
+ <g class="train"><rect x="0" y="176" width="220" height="20" rx="7" fill="#fff"/><rect x="0" y="186" width="220" height="5" fill="#e6337a"/><g fill="#3a0d3d" opacity=".7"><rect x="12" y="179" width="22" height="6" rx="2"/><rect x="48" y="179" width="22" height="6" rx="2"/><rect x="84" y="179" width="22" height="6" rx="2"/><rect x="120" y="179" width="22" height="6" rx="2"/><rect x="156" y="179" width="22" height="6" rx="2"/><rect x="192" y="179" width="18" height="6" rx="2"/></g></g>
+ <rect x="0" y="230" width="1200" height="40" fill="url(#riv)"/>
+ <path d="M60 246h80M300 254h120M640 244h90M900 256h140" stroke="#ffd27a" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+</svg>
+<div class="tt"><h1>ชีวิตดีๆ ที่กรุงเทพฯ</h1><p>เกิดได้ตั้งแต่ พ.ศ. 2500 ใช้ชีวิตผ่านเหตุการณ์จริงของกรุงเทพฯ การเมือง และวงการบันเทิง แล้วตัดสินใจเองว่าจะเดินทางไหน</p></div>
+</header>
+
+<main class="wrap">
+ <div class="left"><section class="card id" id="idcard" aria-live="polite"></section><section class="card" id="family"></section></div>
+ <section>
+  <div class="card" style="margin-bottom:18px">
+   <div class="ctrl">
+    <button class="ghost" id="auto" aria-pressed="false">เล่นอัตโนมัติ</button>
+    <div class="seg" role="group" aria-label="ความเร็ว" id="speed">
+     <button data-s="3400">ช้า</button><button data-s="2200" aria-pressed="true">ปกติ</button><button data-s="1200">เร็ว</button><button data-s="550">เร็วมาก</button>
+    </div>
+    <span class="chk">คำถามสำคัญจะหยุดรอให้คุณตอบเองเสมอ</span>
+   </div>
+   <div id="year"></div>
+   <div id="choice"></div>
+  </div>
+  <div class="card"><h2>เส้นทางชีวิต</h2><ul class="log" id="log"></ul>
+   <p class="note">เหตุการณ์ข่าวอ้างอิงเหตุการณ์จริงถึง พ.ศ. 2569 ปีหลังจากนั้นเป็นอนาคตที่แต่งขึ้น ตัวเลขเงินปรับตามค่าเงินแต่ละยุคแบบคร่าวๆ ยังไม่ใช่สถิติจริง</p></div>
+ </section>
+</main>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+const cl=v=>Math.max(0,Math.min(100,Math.round(v)));
+const fmt=n=>(n<0?'-':'')+'฿'+Math.abs(Math.round(n)).toLocaleString('th-TH');
+const NOW=2569;
+const inf=y=>Math.pow(1.045,y-NOW); // ค่าเงินเทียบปี 2569
+const V=n=>Math.round(n*inf(S.y)); // แปลงราคาปี 2569 เป็นราคาปีปัจจุบันของตัวละคร
+
+const districts=[['บางรัก','ย่านเก่าริมเจ้าพระยา'],['ลาดพร้าว','ย่านบ้านและตลาด'],['บางกะปิ','ใกล้ตลาดและมหาวิทยาลัย'],['ปทุมวัน','ใจกลางเมือง'],['ธนบุรี','ฝั่งธนฯ ใกล้วัดอรุณ'],['จตุจักร','ใกล้ตลาดนัดสุดสัปดาห์'],['บางนา','ย่านห้างและทางด่วน'],['ห้วยขวาง','ย่านอาหารเผ็ดถึงใจ'],['ดอนเมือง','ใกล้สนามบินดอนเมือง'],['มีนบุรี','ชานเมืองฝั่งตะวันออก'],['สาทร','ย่านตึกสูงและสถานทูต'],['บางแค','ย่านตลาดและหมู่บ้าน'],['ดุสิต','ย่านเก่าใกล้สวนสัตว์'],['พระนคร','เมืองเก่ารอบเกาะรัตนโกสินทร์']];
+const families=[{n:'ครอบครัวพ่อค้าแม่ค้าในตลาด',m:20000,c:8,w:3},{n:'ครอบครัวมนุษย์เงินเดือน',m:80000,c:10,w:4},{n:'ครอบครัวข้าราชการ',m:150000,c:20,w:2},{n:'ครอบครัวเจ้าของกิจการ',m:500000,c:35,w:1.5},{n:'ครอบครัวมีฐานะย่านสุขุมวิท',m:2000000,c:55,w:.5}];
+const NAMES={ชาย:{old:['สมชาย','บุญมี','ประเสริฐ','วิชัย','สมศักดิ์','ชาญ','สุรชัย','ประยูร','สมพงษ์','ไพโรจน์','อุดม','ธวัช','สุเทพ','บุญส่ง','วิโรจน์','มนตรี','ชูชาติ','สมหมาย'],new:['ภูมิ','กันต์','ณัฐ','ธาม','ปัณณ์','เมฆ','ต้น','ไผ่','ภีม','ข้าวปุ้น','ก้อง','ภู','ตะวัน','กร','นนท์','เจ','ปิ่น','อชิ','ธันวา','บอส']},หญิง:{old:['สมศรี','วันเพ็ญ','บุญเรือน','มาลี','จำเนียร','สุดา','ประภา','ลำดวน','สมใจ','บุษบา','จันทร์เพ็ญ','อำไพ','ราตรี','สุนีย์','พรทิพย์','กาญจนา','นงลักษณ์','ประไพ'],new:['ใบเตย','มายด์','แพรว','ข้าวหอม','น้ำฝน','ขิม','ปลื้ม','ดาว','อิงฟ้า','ฟ้าใส','มิ้น','แพรวา','ใบบัว','เฟิร์น','น้ำใส','กิ่ง','ฝ้าย','ออม','ไอซ์','พลอย']}};
+const usedNames=()=>S?new Set([S,...S.parents,...(S.partner?[S.partner]:[]),...S.exes,...S.children,...S.grand].map(p=>p.name)):new Set();
+function nameFor(sex,by){const u=usedNames();let pool=NAMES[sex][by<2525?'old':'new'].filter(n=>!u.has(n));if(!pool.length)pool=NAMES[sex][by<2525?'new':'old'].filter(n=>!u.has(n));return pool.length?pick(pool):pick(NAMES[sex].new)+' '+R(2,9)}
+const TR=['ใจดี','ขี้เล่น','ขยัน','ขี้อาย','ใจร้อน','ประหยัด','ชอบเที่ยว','ช่างคิด','อารมณ์ดี','ดื้อนิดๆ','รักสัตว์','ช่างพูด','ทำอาหารเก่ง','ติดเกม','รักการอ่าน','ชอบร้องเพลง'];
+const PJ=[[['พ่อค้าผลไม้ในตลาด','คนขับสามล้อ'],['แม่ค้าข้าวแกง','แม่ค้าขนมหวาน']],[['พนักงานบริษัท','พนักงานธนาคาร'],['พนักงานบริษัท','แม่บ้าน']],[['ข้าราชการ','ครู'],['ครู','พยาบาล']],[['เจ้าของร้านวัสดุก่อสร้าง','เจ้าของร้านทอง'],['เจ้าของร้านอาหาร','ช่วยดูแลกิจการ']],[['นักธุรกิจอสังหาฯ','ผู้บริหารบริษัท'],['ผู้บริหารบริษัท','นักธุรกิจ']]];
+const jobsAt=y=>jobs.filter(j=>y>=j[5]&&y<=j[6]).map(j=>j[1]);
+function person(rel,sex,by,o){const r=Object.assign({rel,sex,by,name:nameFor(sex,by),trait:shuffle(TR).slice(0,2).join(' · '),money:0,close:R(60,85),look:mkLook(),alive:true,job:'',kids:0},o||{});r.look.tilt=/ขี้อาย|ช่างคิด|รักการอ่าน/.test(r.trait)?6:/ช่างพูด|ขี้เล่น|อารมณ์ดี|ชอบร้องเพลง/.test(r.trait)?-5:0;return r}
+const closeLab=c=>c>=70?['ใกล้ชิดมาก','c4']:c>=45?['ใกล้ชิด','c3']:c>=25?['เริ่มห่างเหิน','c2']:['ห่างเหิน','c1'];
+// รูปเงาด้านข้าง (profile) ที่เปลี่ยนตามวัย: L=ลักษณะประจำตัว, pr=m/f/x
+function facePath(nx,ny,cx,cy){return `M40 70 C34 62 26 52 28 38 C30 22 46 14 58 18 C66 21 68 28 67 34 C67 37 69 39 69 41 C${nx-3} 43 ${nx} ${ny-2} ${nx} ${ny} C${nx-1} ${ny+2} ${nx-4} ${ny+2.4} 69 51.5 C71 53 70.6 54.2 69.6 55.2 C70.6 56.4 70.4 58.2 68.6 59.2 C68.4 61 ${cx+2} ${cy-1} ${cx} ${cy} C62 ${cy+1} 59.5 ${cy+1.2} 58 66.5 C58 72 60 78 64 85 L38 85 C40 77 41 73 40 70Z`}
+const BABY='M40 74 C28 66 20 52 24 36 C28 20 44 12 58 16 C68 19 72 28 71 38 C71 41 72 44 72.5 46 C72 48 70 48.5 69.5 49.5 C70.5 51 70 53 68.5 54 C68.5 57 66 60 62 61 C60 64 60 68 62 80 L38 80 C40 77 40 75 40 74Z';
+const HAIR={
+ cap:'M27 46 C22 30 34 13 54 13 C64 13 70 19 69 28 C66 26 63 26 60 27 C54 24 46 26 41 34 C37 40 36 46 37 52 C33 52 29 50 27 46Z',
+ quiff:'M27 46 C22 30 32 12 52 11 C60 9 70 10 72 17 C73 22 70 24 67 24 C66 27 64 28 61 27 C54 25 46 27 42 35 C39 41 38 46 39 52 C34 52 29 50 27 46Z',
+ short:'M28 44 C24 28 36 15 54 15 C63 15 68 20 68 27 C62 25 52 25 45 31 C40 36 38 42 38 50 C33 50 29 48 28 44Z',
+ bob:'M26 58 C18 32 34 12 56 13 C66 14 71 21 69 29 C64 27 58 27 54 28 C48 30 44 36 44 46 C44 54 42 60 36 62 C32 63 28 62 26 58Z',
+ pony:'M34 22 C25 22 19 31 22 43 C24 53 17 59 20 69 C22 75 16 79 13 83 C24 81 31 73 29 62 C28 54 33 46 31 36 C31 30 33 26 37 24Z',
+ bald:'M30 50 C27 44 28 36 32 32 C34 38 36 44 40 50 C36 52 32 52 30 50Z',
+ tuft:'M50 16 C52 10 58 10 61 14 C57 13 54 14 53 17Z'};
+let avc=0;
+function mkLook(){return{hair:R(0,3),flip:Math.random()<.5,hue:R(0,359),bald:Math.random()<.45,cane:Math.random()<.5,b:Math.random(),bust:.35+Math.random()*.65,glasses:Math.random()<.3,ear:Math.random()<.55,dress:Math.random()<.5,tilt:R(-1,1)*4}}
+// ลำตัวด้านข้างหันขวา: b=รูปร่าง bust=อก belly=พุง hip=สะโพก
+function torso(b,bust,belly,hip,hunch){
+ const sh=27-b*5-(hunch?2:0),cx=67+b*4+bust*9,bx=64+b*6+belly*13,fx=62+b*5+hip*6,bk=30-b*5-hip*6;
+ return{sh,cx,d:`M40.5 64 C36 66 ${sh+5} 68 ${sh} 76 C${sh-2-(hunch?6:0)} 88 ${sh+1} 100 ${bk+2} 112 C${bk} 120 ${bk-hip*2} 126 ${bk-hip*3} 132 L${fx+hip*3} 132 C${fx+1} 124 ${bx} 117 ${bx} 110 C${bx} 104 ${cx-3} 101 ${cx-2} 98 C${cx+1.5} 93 ${cx+1} 84 ${cx-4.5} 79 C66 75 62.5 70 61.5 64Z`,
+  arm:`M${sh+3} 74 C${sh} 88 ${sh+5} 100 ${sh+11} 108 C${sh+15} 113 ${sh+20} 118 ${sh+23} 123 C${sh+26} 124 ${sh+29} 122 ${sh+29} 120 C${sh+25} 112 ${sh+18} 102 ${sh+16} 92 C${sh+15} 84 ${sh+13} 76 ${sh+10} 71Z`}
+}
+function roleOf(r,age){r=r||'';if(age<6)return'';if(age>=6&&age<18)return'student';if(/แพทย์|พยาบาล/.test(r))return'med';if(/เชฟ/.test(r))return'chef';if(/ไรเดอร์|แท็กซี่|สามล้อ|รถเมล์|ช่าง/.test(r))return'cap';if(/บริษัท|ธนาคาร|บัญชี|ทนาย|ผู้บริหาร|ข้าราชการ|นักธุรกิจ|การตลาด|วิเคราะห์|ขาย/.test(r))return'suit';if(/ครีเอเตอร์|ดนตรี|นักร้อง|เกม|โปรแกรมเมอร์|ดีไซเนอร์|วาด/.test(r))return'phones';if(/ครู/.test(r))return'glasses';if(/แม่ค้า|พ่อค้า|ข้าวแกง|ขนม|ร้านอาหาร|บาริสต้า/.test(r))return'apron';return''}
+function avatar(L,age,pr,job){
+ const st=age<3?0:age<13?1:age<20?2:age<45?3:age<65?4:5,sc=[.58,.74,.92,1,1,.97][st];
+ const ink=`hsl(${L.hue} 28% ${st===5?24:13}%)`,ink2=`hsl(${L.hue} 24% ${st===5?31:21}%)`,bg=`hsl(${L.hue} 55% 88%)`,hc=age>=55?`hsl(${L.hue} 5% 70%)`:ink,id='cv'+(++avc);
+ const sets={m:['quiff','short','curly','quiff'],f:['braid','pony','bob','bun'],x:['bob','curly','short','pony']};
+ let h=sets[pr][L.hair];
+ if(st===0)h='tuft';else if(st===5&&pr==='m'&&L.bald)h='bald';else if(st>=4&&h==='braid')h='bun';else if(st===1&&h==='braid')h='pony';
+ const P=d=>`<path d="${d}" fill="${hc}"/>`,C=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${hc}"/>`;
+ let hair='',back='';
+ if(h==='quiff'||h==='short'||h==='bob'||h==='bald'||h==='tuft')hair=P(HAIR[h]);
+ else if(h==='curly')hair=[[30,42,8],[29,31,8],[35,21,8.5],[45,14.5,8.5],[56,13.5,8],[64,17.5,7],[68,24,5.5],[33,50,6]].map(c=>C(...c)).join('');
+ else if(h==='bun')hair=P(HAIR.cap)+C(36,17,9.5);
+ else if(h==='pony'){hair=P(HAIR.cap);back=P(HAIR.pony)}
+ else if(h==='braid'){hair=P(HAIR.cap)+C(33,24,9);back=[[30,44,8.5],[26,56,8.5],[23,68,8],[21,79,7],[20,89,6],[20,98,5]].map(c=>C(...c)).join('')}
+ const f=pr==='f',role=roleOf(job,age),line=`stroke="${bg}" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".75"`;
+ const face=st===0?BABY:st===1?facePath(71.6,47.4,66,63.4):facePath(f?73:74.6,48,f?65.4:65.8,f?63.6:64.6);
+ // หัว: เครื่องประดับ
+ let hx='';
+ if(f&&st>=2)hx+=`<path d="M67.4 40.6 l2.6 -1.4 M67.7 41.7 l2.8 -.5 M67.6 42.8 l2.4 .4" stroke="${ink}" stroke-width=".7" stroke-linecap="round"/>`;
+ if(f&&st>=2&&L.ear)hx+=`<circle cx="47" cy="53" r="1.6" fill="${bg}" opacity=".85"/>`;
+ if((L.glasses&&st>=3)||role==='glasses'||(st===5&&L.cane))hx+=`<path d="M61.5 38.5 h7 v4.5 h-7z M61.5 40.5 L47 42" ${line}/>`;
+ if(role==='cap')hx+=`<path d="M29 30 C30 14 54 8 66 20 C70 21 78 22 82 25 C78 28 70 28 64 27 C52 24 40 26 29 30Z" fill="${ink}"/>`;
+ if(role==='chef')hx+=`<path d="M36 22 C28 8 40 -2 48 4 C54 -4 70 0 68 12 C74 14 72 22 66 22 Z" fill="${ink2}"/>`;
+ if(role==='phones')hx+=`<path d="M38 36 C38 14 64 8 68 26" stroke="${ink2}" stroke-width="3.2" fill="none"/><ellipse cx="45" cy="44" rx="4.5" ry="6.5" fill="${ink2}"/>`;
+ // ลำตัว
+ const hunch=st===5,bust=f?(st>=3?L.bust:st===2?L.bust*.45:0):0,belly=(st===4?.3:st===5?.15:0)+(L.b>.7?L.b-.6:0),hip=f&&st>=2?(L.dress?.9:.5):0;
+ const T=st===0?{sh:30,cx:64,d:'M40.5 64 C26 66 18 84 20 104 C22 124 36 133 50 133 C68 133 80 122 80 102 C80 84 70 70 61.5 64Z',arm:''}:torso(L.b,bust,belly,hip,hunch);
+ let bx='';
+ if(role==='student')bx+=`<path d="M57 65 L62 73 L66.5 67" ${line}/>`;
+ if(role==='suit')bx+=`<path d="M60 66 C62 76 66 86 ${T.cx-1} 96 M60 66 C58 78 56 92 54 110" ${line}/>`;
+ if(role==='med')bx+=`<path d="M58 66 C58 80 64 88 ${T.cx-4} 92" ${line}/><circle cx="${T.cx-4}" cy="93.5" r="2" fill="${bg}" opacity=".75"/>`;
+ if(role==='apron')bx+=`<path d="M60 68 L${T.cx} 96 M56 104 L${T.cx+3} 106" ${line}/>`;
+ if(st>=3&&!role)bx+=`<path d="M58.5 65.5 C61 70 64 72 67 72" ${line}/>`;
+ const cane=st===5&&L.cane?`<path d="M${T.sh+30} 133 L${T.sh+30} 104 Q${T.sh+30} 98 ${T.sh+24} 99" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`:'';
+ const hs=st===0?1.3:st===1?1.16:st===2?1.05:1,tilt=(L.tilt||0)+(hunch?7:0),fwd=hunch?3:0;
+ const head=`<g transform="translate(${fwd} 0) rotate(${tilt} 50 64) translate(50 64) scale(${hs}) translate(-50 -64) translate(12.9 1.4) scale(.76)">${back}<path d="${face}" fill="${ink}"/>${hair}${hx}</g>`;
+ const body=`<path d="${T.d}" fill="${ink}"/>${T.arm?`<path d="${T.arm}" fill="${ink2}"/>`:''}${bx}`;
+ const tr=`translate(50 132) scale(${L.flip?-sc:sc} ${sc}) translate(-50 -132)`;
+ return `<svg viewBox="0 0 100 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><rect width="100" height="130" fill="${bg}"/><ellipse cx="50" cy="132" rx="46" ry="10" fill="${ink}" opacity=".08"/><g transform="${tr}">${body}${head}${cane}</g></svg>`;
+}
+const prOf=p=>p.sex==='ชาย'?'m':'f';
+const prMe=()=>S.id&&S.out&&{'ผู้หญิงข้ามเพศ':'f','ผู้ชายข้ามเพศ':'m','นอนไบนารี':'x'}[S.id]||prOf(S);
+const allFam=()=>[...S.parents,...(S.partner?[S.partner]:[]),...S.exes,...S.children,...S.grand];
+function partnerSex(){const o=S.sex==='ชาย'?'หญิง':'ชาย';return S.id==='เกย์'?'ชาย':S.id==='เลสเบี้ยน'?'หญิง':S.id?pick(['ชาย','หญิง']):o}
+function bondAll(k,dp,dc,dpar){if(S.partner)S.partner.close=cl(S.partner.close+dp);S.children.forEach(c=>c.close=cl(c.close+dc));S.parents.forEach(p=>{if(p.alive)p.close=cl(p.close+(dpar||0))})}
+function famYear(){
+ const y=S.y;
+ for(const p of allFam()){if(!p.alive||p.rel==='อดีตคนรัก')continue;const pa=y-p.by;
+  if((p.rel==='พ่อ'||p.rel==='แม่'||p.rel==='คู่ชีวิต')&&pa>=62&&Math.random()<(pa-62)*.011+.004){p.alive=false;p.dy=y;log(`${p.rel==='คู่ชีวิต'?'คู่ชีวิต':p.rel} (${p.name}) จากไปอย่างสงบในวัย ${pa} ปี`,'big');fx({h:-10});if(p.rel==='คู่ชีวิต'){S.exes.push(p);S.partner=null;S.married=false}continue}
+  if((p.rel==='พ่อ'||p.rel==='แม่')&&pa===60&&p.job&&p.job!=='แม่บ้าน')p.job=`เกษียณแล้ว (เคยเป็น${p.job})`;
+  if(p.rel==='พ่อ'||p.rel==='แม่'){if(S.age>=18)p.close=cl(p.close-R(0,2))}
+  if(p.rel==='คู่ชีวิต'){p.money+=V(R(10000,90000));p.close=cl(p.close-R(0,3));if(pa===60)p.job=`เกษียณแล้ว (เคยเป็น${p.job})`;
+   if(p.close<20&&Math.random()<.2){log(`ทะเลาะกับ${p.name}บ่อยขึ้น สุดท้ายตัดสินใจแยกทางกัน`,'bad');fx({h:-10});p.rel='อดีตคนรัก';p.dy=null;S.exes.push(p);S.partner=null;S.married=false}}
+  if(p.rel==='ลูก'){
+   if(pa===(p.dream?21:22)){p.job=p.dream?pick(['นักดนตรี','กราฟิกดีไซเนอร์','นักวาดภาพประกอบ','นักพัฒนาเกม']):pick(jobsAt(y));log(`${p.name} ลูก${p.sex==='ชาย'?'ชาย':'สาว'} เรียนจบและได้งานเป็น${p.job}`,'good');fx({h:4})}
+   if(pa>=22)p.money+=V(R(20000,140000));if(pa>=12)p.close=cl(p.close-R(0,2));if(pa===60&&p.job)p.job='เกษียณแล้ว';
+   if(pa>=26&&pa<=42&&p.kids<2&&Math.random()<.12){p.kids++;const g=person('หลาน',pick(['ชาย','หญิง']),y,{parent:p.name});S.grand.push(g);log(`${p.name}มีลูก ได้หลาน${g.sex==='ชาย'?'ชาย':'สาว'}ชื่อ ${g.name}`,'big');fx({h:8})}}
+ }
+ const ties=[...(S.partner?[S.partner]:[]),...S.children.filter(c=>c.alive)];
+ if(ties.length){const av=ties.reduce((s,p)=>s+p.close,0)/ties.length;if(av>=65)fx({h:1});else if(av<30)fx({h:-2})}
+}
+const IDS=['เกย์','เลสเบี้ยน','ไบเซ็กชวล','ผู้หญิงข้ามเพศ','ผู้ชายข้ามเพศ','นอนไบนารี'];
+const names=['ต้นข้าว','ปลื้ม','ภูมิ','ใบเตย','กันต์','มายด์','ณัฐ','แพรว','ข้าวหอม','ธาม','น้ำฝน','ปัณณ์','เมฆ','ขิม','สมชาย','บุญมี','วันเพ็ญ','สมศรี'];
+// [หมวด, อาชีพ, วุฒิ(0 ม.6 /1 ปวส./2 ป.ตรี), ความรู้ที่ต้องการ, เงินเดือน (ค่าเงินปี 2569), มีตั้งแต่ พ.ศ., ถึง พ.ศ.]
+const jobs=[['เทคโนโลยี','โปรแกรมเมอร์',2,60,35000,2525,9999],['เทคโนโลยี','นักวิเคราะห์ข้อมูล',2,65,40000,2555,9999],['สุขภาพ','พยาบาล',2,60,28000,0,9999],['สุขภาพ','แพทย์',2,85,60000,0,9999],['การศึกษา','ครู',2,50,18000,0,9999],['ราชการ','ข้าราชการ',2,55,18000,0,9999],['ออฟฟิศ','พนักงานบัญชี',2,45,22000,0,9999],['ออฟฟิศ','นักการตลาดดิจิทัล',2,45,25000,2550,9999],['การเงิน','พนักงานธนาคาร',2,60,30000,0,9999],['กฎหมาย','ทนายความ',2,75,40000,0,9999],['ครีเอทีฟ','กราฟิกดีไซเนอร์',1,40,20000,2530,9999],['ท่องเที่ยว','ไกด์นำเที่ยว',1,40,22000,0,9999],['บริการ','เชฟร้านอาหาร',1,30,20000,0,9999],['ช่าง','ช่างไฟฟ้า',1,35,20000,0,9999],['ช่าง','ช่างซ่อมวิทยุโทรทัศน์',1,30,18000,0,2550],['ออฟฟิศ','พนักงานพิมพ์ดีด',0,20,15000,0,2540],['บันเทิง','นักแสดงละครทีวี',0,30,30000,2513,9999],['บันเทิง','นักร้องลูกทุ่ง',0,15,20000,0,9999],['ครีเอทีฟ','ครีเอเตอร์ออนไลน์',0,20,15000,2555,9999],['บริการ','บาริสต้า',0,10,13000,2545,9999],['ขนส่ง','ไรเดอร์ส่งอาหาร',0,0,15000,2560,9999],['ขนส่ง','กระเป๋ารถเมล์',0,0,12000,0,2565],['ขนส่ง','คนขับแท็กซี่',0,0,16000,0,9999],['ค้าขาย','พนักงานขายในห้าง',0,5,14000,2510,9999]];
+// [ธุรกิจ, ลงทุน, กำไรต่อปีต่ำสุด, สูงสุด, โอกาสเจ๊งต่อปี, ตั้งแต่ พ.ศ., ถึง พ.ศ., ออนไลน์]
+const bizs=[['ร้านกาแฟโบราณ',150000,0,300000,.08,0,2545],['ร้านกาแฟสดในซอย',300000,-100000,400000,.14,2545,9999],['ร้านข้าวมันไก่',150000,0,350000,.07,0,9999],['ร้านตัดเสื้อ',100000,0,250000,.08,0,2545],['ร้านเช่าวิดีโอ',200000,0,350000,.1,2525,2550],['ร้านถ่ายเอกสาร',150000,0,250000,.06,2515,2565],['ร้านอินเทอร์เน็ตคาเฟ่',400000,-50000,450000,.12,2540,2558],['ร้านเสื้อผ้าออนไลน์',50000,-50000,450000,.14,2550,9999,1],['หอพักใกล้มหาวิทยาลัย',3000000,300000,900000,.03,0,9999],['ร้านนวดแผนไทย',400000,0,600000,.08,0,9999],['คาเฟ่แมว',600000,-150000,700000,.17,2555,9999],['ฟู้ดทรัคหมูกระทะ',250000,-50000,450000,.12,2555,9999],['สตาร์ทอัปแอปจองคิว',800000,-400000,3000000,.28,2555,9999,1],['ร้านบิงซู',200000,-50000,350000,.12,2557,9999],['โรงเรียนกวดวิชา',500000,50000,900000,.06,2520,9999]];
+// ข่าวจริงรายปี [พ.ศ., หมวด, ข้อความ]
+const HIST=[[2500,'การเมือง','จอมพลสฤษดิ์ ธนะรัชต์ ทำรัฐประหาร'],[2508,'บันเทิง','อาภัสรา หงสกุล คว้านางงามจักรวาลคนแรกของไทย'],[2509,'กีฬา','กรุงเทพฯ เป็นเจ้าภาพเอเชียนเกมส์ ครั้งที่ 5'],[2510,'การเมือง','ก่อตั้งอาเซียนด้วยปฏิญญากรุงเทพฯ'],[2513,'กีฬา','กรุงเทพฯ เป็นเจ้าภาพเอเชียนเกมส์ ครั้งที่ 6'],[2513,'บันเทิง','ไทยทีวีสีช่อง 3 เริ่มออกอากาศ'],[2516,'การเมือง','เหตุการณ์ 14 ตุลา ประชาชนและนักศึกษาชุมนุมใหญ่บนถนนราชดำเนิน'],[2519,'การเมือง','เหตุการณ์ 6 ตุลา ที่มหาวิทยาลัยธรรมศาสตร์'],[2521,'กีฬา','กรุงเทพฯ เป็นเจ้าภาพเอเชียนเกมส์ ครั้งที่ 8'],[2525,'กรุงเทพฯ','ฉลองสมโภชกรุงรัตนโกสินทร์ 200 ปี'],[2526,'กรุงเทพฯ','น้ำท่วมใหญ่ หลายเขตน้ำขังนานหลายเดือน'],[2531,'บันเทิง','ภรณ์ทิพย์ นาคหิรัญกนก คว้านางงามจักรวาล'],[2534,'การเมือง','คณะ รสช. ทำรัฐประหาร'],[2535,'การเมือง','เหตุการณ์พฤษภาทมิฬ บนถนนราชดำเนิน'],[2535,'บันเทิง','กรุงเทพฯ เป็นเจ้าภาพมิสยูนิเวิร์ส'],[2538,'บันเทิง','ภาวดี วิเชียรรัตน์ ได้เป็นนางสาวไทย'],[2540,'เศรษฐกิจ','วิกฤตต้มยำกุ้ง ค่าเงินบาทลอยตัว'],[2540,'การเมือง','ประกาศใช้รัฐธรรมนูญ 2540'],[2540,'บันเทิง','สรวงสุดา ลาวัณย์ประเสริฐ ได้เป็นนางสาวไทย'],[2541,'กีฬา','กรุงเทพฯ เป็นเจ้าภาพเอเชียนเกมส์ ครั้งที่ 13'],[2542,'กรุงเทพฯ','รถไฟฟ้า BTS เปิดให้บริการวันแรก'],[2544,'การเมือง','ทักษิณ ชินวัตร เป็นนายกรัฐมนตรี'],[2544,'บันเทิง','สุจิรา อรุณพิพัฒน์ ได้เป็นนางสาวไทย'],[2544,'บันเทิง','ภาพยนตร์ สุริโยไท เข้าฉาย'],[2545,'สังคม','โครงการ 30 บาทรักษาทุกโรคครอบคลุมทั่วประเทศ'],[2546,'บันเทิง','ภาพยนตร์ แฟนฉัน และ องค์บาก เข้าฉาย'],[2547,'กรุงเทพฯ','รถไฟฟ้าใต้ดิน MRT เปิดให้บริการ'],[2548,'บันเทิง','ไทยเป็นเจ้าภาพมิสยูนิเวิร์สอีกครั้ง'],[2549,'การเมือง','รัฐประหาร 19 กันยายน'],[2549,'กรุงเทพฯ','สนามบินสุวรรณภูมิเปิดให้บริการ'],[2551,'การเมือง','การชุมนุมทางการเมืองปิดสนามบินสุวรรณภูมิ'],[2553,'การเมือง','การชุมนุมใหญ่ย่านราชประสงค์ จบลงด้วยการสลายการชุมนุม'],[2553,'กรุงเทพฯ','แอร์พอร์ต เรล ลิงก์ เปิดให้บริการ'],[2554,'การเมือง','ยิ่งลักษณ์ ชินวัตร เป็นนายกรัฐมนตรีหญิงคนแรก'],[2554,'กรุงเทพฯ','มหาอุทกภัย น้ำท่วมหลายเขตของกรุงเทพฯ'],[2556,'บันเทิง','ภาพยนตร์ พี่มาก..พระโขนง ทำรายได้ถล่มทลาย'],[2556,'การเมือง','เริ่มการชุมนุมใหญ่ของ กปปส.'],[2557,'การเมือง','รัฐประหาร 22 พฤษภาคม'],[2559,'สังคม','ในหลวงรัชกาลที่ 9 เสด็จสวรรคต คนไทยทั้งประเทศร่วมไว้ทุกข์'],[2560,'สังคม','พระราชพิธีถวายพระเพลิงพระบรมศพ ณ ท้องสนามหลวง'],[2560,'บันเทิง','ภาพยนตร์ ฉลาดเกมส์โกง ดังไปทั่วเอเชีย'],[2561,'สังคม','ภารกิจช่วยทีมหมูป่าจากถ้ำหลวง คนทั้งโลกลุ้นตาม'],[2561,'กรุงเทพฯ','ไอคอนสยามเปิดริมแม่น้ำเจ้าพระยา'],[2562,'การเมือง','การเลือกตั้งทั่วไปครั้งแรกหลังรัฐประหาร 2557'],[2562,'สังคม','พระราชพิธีบรมราชาภิเษก รัชกาลที่ 10'],[2563,'สังคม','โควิด-19 ระบาด กรุงเทพฯ ล็อกดาวน์'],[2563,'การเมือง','การชุมนุมของเยาวชนและนักศึกษาหลายครั้ง'],[2564,'บันเทิง','ลิซ่า BLACKPINK ปล่อยเพลงเดี่ยว LALISA'],[2565,'การเมือง','ชัชชาติ สิทธิพันธุ์ ชนะเลือกตั้งผู้ว่าฯ กทม.'],[2566,'การเมือง','เลือกตั้งทั่วไป เศรษฐา ทวีสิน เป็นนายกรัฐมนตรี'],[2567,'การเมือง','แพทองธาร ชินวัตร เป็นนายกรัฐมนตรี'],[2567,'บันเทิง','ภาพยนตร์ หลานม่า ดังทั่วเอเชีย'],[2567,'บันเทิง','พนิดา เขื่อนจินดา ได้เป็นนางสาวไทย'],[2567,'สังคม','รัฐสภาผ่านกฎหมายสมรสเท่าเทียม'],[2568,'สังคม','กฎหมายสมรสเท่าเทียมมีผลบังคับใช้'],[2568,'กรุงเทพฯ','แผ่นดินไหวจากเมียนมา รู้สึกได้ทั่วกรุงเทพฯ'],[2568,'การเมือง','อนุทิน ชาญวีรกูล เป็นนายกรัฐมนตรี'],[2568,'บันเทิง','ไทยเป็นเจ้าภาพมิสยูนิเวิร์ส'],[2569,'การเมือง','เลือกตั้งทั่วไป 8 ก.พ. สภาเลือกอนุทิน ชาญวีรกูล เป็นนายกฯ']];
+const FUTURE=['รถไฟฟ้าสายใหม่เปิดเพิ่มอีกสาย','กรุงเทพฯ เปลี่ยนรถเมล์เป็นรถไฟฟ้าทั้งเมือง','หนังไทยเรื่องใหม่ได้รางวัลใหญ่ระดับโลก','ศิลปินไทยขึ้นเวทีเทศกาลดนตรีระดับโลก','กรุงเทพฯ เปิดสวนสาธารณะริมน้ำแห่งใหม่','ไทยเป็นเจ้าภาพมหกรรมกีฬานานาชาติ'];
+// บรรยากาศแต่ละยุค
+const VIBE=[[2500,2519,['ไปดูหนังกลางแปลงที่วัดใกล้บ้าน','ฟังเพลงสุนทราภรณ์ทางวิทยุกับที่บ้าน','นั่งสามล้อไปตลาดนัดสนามหลวง']],[2520,2539,['เช่าวิดีโอมาดูกันทั้งบ้าน','ได้เพจเจอร์เครื่องแรก ทันสมัยมาก','ซื้อเทปคาสเซ็ตอัลบั้มใหม่ของนักร้องคนโปรด']],[2540,2554,['แชท MSN กับเพื่อนจนดึก','ร้านเกมออนไลน์หน้าโรงเรียนเต็มทุกเย็น','ซื้อแผ่นวีซีดีหนังมาดูที่บ้าน']],[2555,2600,['สั่งอาหารผ่านแอปเป็นครั้งแรก','ไลฟ์ขายของบนโซเชียลกับเพื่อน','ไถคลิปสั้นจนลืมเวลานอน']]];
+// [อายุต่ำสุด, สูงสุด, ข้อความ, ผล (เงินเป็นราคาปี 2569), เงื่อนไข]
+const events=[[0,5,'ได้ไปเที่ยวสวนสัตว์ดุสิตครั้งแรก ตื่นเต้นมาก',{h:5}],[3,14,'เล่นสาดน้ำสงกรานต์กับครอบครัวทั้งวัน',{h:6}],[6,17,'ได้รางวัลประกวดวาดรูปของเขต',{h:5,k:4}],[6,17,'เป็นไข้หวัดใหญ่ หยุดเรียนไปหนึ่งสัปดาห์',{he:-5}],[12,24,'ได้แก๊งเพื่อนสนิทใหม่จากค่ายอาสา',{h:6,c:6}],[15,70,'ฝุ่น PM2.5 หนักทั้งเดือน ต้องใส่หน้ากากตลอด',{he:-4},s=>s.y>=2560],[18,70,'น้ำท่วมซอยหน้าบ้าน ลุยน้ำกลับบ้านสามวัน',{h:-4,m:-15000}],[18,90,'ถูกหวยเลขท้ายสองตัว',{h:5,m:2000}],[22,60,'รถติดหนักบนถนนพระราม 4 วันละสองชั่วโมง',{h:-3},s=>!s.nearRail],[18,60,'คลิปตลกไวรัลบนโซเชียล มีคนรู้จักเพิ่มเยอะ',{c:8,h:4},s=>s.y>=2555],[22,60,'ได้โบนัสปลายปีเกินคาด',{m:'bonus'},s=>s.job],[22,70,'ค่าเช่าที่พักขึ้นอีกแล้ว',{m:-20000},s=>!s.home],[20,90,'เจอร้านส้มตำเจ้าเด็ดในซอยข้างบ้าน',{h:3}],[30,90,'ไปไหว้พระที่วัดพระแก้ว ใจสงบขึ้นมาก',{h:5}],[40,90,'หมอแนะนำให้ลดหวาน มัน เค็ม',{he:-4}],[55,95,'หลานมาเยี่ยมพร้อมขนมเบื้อง',{h:7},s=>s.kids>0],[60,95,'เข้าชมรมรำไม้พลองที่สวนลุมพินีตอนเช้า',{he:6,h:4}],[16,70,'ไปร่วมขบวนพาเหรดบางกอกไพรด์ สนุกและภูมิใจในตัวเอง',{h:8,c:5},s=>s.id&&s.out&&s.y>=2565],[25,60,'ไปเที่ยวทะเลบางแสนกับเพื่อนสุดสัปดาห์',{h:5,m:-5000}]];
+
+let S=null,pending=null,timer=null,speed=2200,running=false;
+let me=null;try{me=+localStorage.getItem('bkk-me')||null}catch(e){}
+const log=(t,c='')=>{S.log.unshift({a:S.age,y:S.y,t,c})};
+function fx(e){if(e.h)S.h=cl(S.h+e.h);if(e.he)S.he=cl(S.he+e.he);if(e.k)S.k=cl(S.k+e.k);if(e.c)S.c=cl(S.c+e.c);if(e.m)S.money+=e.m==='bonus'?S.sal*2:V(e.m)}
+const tone=e=>((e.h||0)+(e.he||0)+(e.k||0)+(e.c||0)+(typeof e.m==='number'?e.m/5000:2))>=0?'good':'bad';
+function wpick(a){let t=a.reduce((s,x)=>s+x.w,0)*Math.random();for(const x of a){if((t-=x.w)<=0)return x}return a[0]}
+const later=(dy,f)=>S.later.push({y:S.y+dy,f});
+const meAge=y=>me&&y>=me?` · ตอนนั้นตัวคุณจริงอายุ ${y-me} ปี`:'';
+
+function newLife(by){
+ const fam=wpick(families),d=pick(districts);
+ by=by||R(2500,NOW);
+ const sx=pick(['ชาย','หญิง']);
+ S={by,y:by,name:'',sex:sx,look:mkLook(),d,fam,age:0,money:0,h:R(60,75),he:R(70,90),k:R(5,15),c:fam.c,edu:-1,sch:0,end:0,job:null,sal:0,biz:null,bizy:0,pension:0,partner:null,kids:0,parents:[],children:[],grand:[],exes:[],mark:0,home:null,nearRail:false,married:false,id:null,idAge:R(13,17),out:false,later:[],alive:true,hs:0,ys:0,log:[],news:[]};
+ if(Math.random()<.1){S.id=pick(IDS.filter(x=>S.sex==='ชาย'?x!=='เลสเบี้ยน'&&x!=='ผู้ชายข้ามเพศ':x!=='เกย์'&&x!=='ผู้หญิงข้ามเพศ'))}
+ S.name=pick(NAMES[sx][by<2525?'old':'new']);
+ const fi=families.indexOf(fam),fj=PJ[fi];
+ S.parents=[person('พ่อ','ชาย',by-R(24,38),{job:pick(fj[0])}),person('แม่','หญิง',by-R(21,34),{job:pick(fj[1])})];
+ S.news=newsFor(by);
+ log(`เกิดเป็นเด็ก${S.sex}ชื่อ ${S.name} ที่เขต${d[0]} (${d[1]}) ใน${fam.n} พ่อชื่อ${S.parents[0].name} แม่ชื่อ${S.parents[1].name}`,'big');
+ S.news.forEach(n=>log(`ข่าวปีที่เกิด: ${n[2]}`,'news'));
+ pending=null;render();
+}
+function newsFor(y){
+ const h=HIST.filter(x=>x[0]===y);
+ if(y>NOW&&Math.random()<.3)h.push([y,'อนาคต',pick(FUTURE)+' (จินตนาการ)']);
+ return h;
+}
+function nextYear(){
+ const a=++S.age;S.y=S.by+a;const y=S.y;
+ S.news=newsFor(y);
+ S.news.forEach(n=>log(`[${n[1]}] ${n[2]}${meAge(y)}`,'news'));
+ if(a>=6&&a<=17)S.k=cl(S.k+S.sch);
+ if(a>=19&&a<=S.end)S.k=cl(S.k+2);
+ if(y===2545)fx({he:3});
+ // งานและวิกฤตเศรษฐกิจ
+ if(S.job&&(y===2540||y===2541)&&Math.random()<.3){log(`วิกฤตต้มยำกุ้ง บริษัทเลิกจ้าง ต้องหางานใหม่`,'bad');S.job=null;S.sal=0;fx({h:-8})}
+ if(S.job&&y===2563&&['ท่องเที่ยว','บริการ','บันเทิง'].includes(S.job[0])&&Math.random()<.4){log('โควิดทำให้งานหายไป ต้องหางานใหม่','bad');S.job=null;S.sal=0;fx({h:-6})}
+ let inc=0;
+ if(S.job){inc+=S.sal*12;S.sal=Math.round(S.sal*1.05)}
+ inc+=S.pension*12;
+ if(S.biz){const b=S.biz,f=inf(y);
+  if(S.bizy>0&&Math.random()<b[4]){log(`${b[0]}ไปต่อไม่ไหว ต้องปิดกิจการ`,'bad');fx({h:-8});S.biz=null}
+  else{let p=R(b[2],b[3]);const crisis={2540:.7,2541:.4,2554:.3,2563:.6,2564:.3}[y]||0;
+   if(b[7]&&(y===2563||y===2564))p+=b[3]*.5;else p-=Math.abs(b[3])*crisis;
+   p=Math.round(p*f*(1+S.c/200));inc+=p;S.bizy++;
+   if(p>b[3]*f*.7)log(`${b[0]}ขายดีมาก ปีนี้กำไร ${fmt(p)}`,'good');else if(p<0)log(`${b[0]}ขาดทุน ${fmt(-p)} ในปีนี้`,'bad')}}
+ if(S.home){S.home.v=Math.round(S.home.v*1.05);if(S.home.left>0){inc-=S.home.pay;if(--S.home.left===0)log('ผ่อนบ้านหมดแล้ว บ้านเป็นของเราเต็มตัว','big')}}
+ if(a>=18){inc-=(S.job||S.biz||S.pension||a>=60)?V((a>=60?100000:(S.home?110000:150000))+S.children.filter(c=>y-c.by<22).length*60000+(S.partner?40000:0)):V(60000)}
+ if(a===18){const g=V(S.fam.m);S.money+=g;log(`ครอบครัวให้ทุนตั้งตัว ${fmt(g)}`)}
+ S.money+=inc;
+ if(S.money<0)S.h=cl(S.h-3);
+ if(a>=45)S.he=cl(S.he-R(0,2));
+ if(a===60&&S.job){if(['ราชการ','การศึกษา'].includes(S.job[0]))S.pension=Math.round(S.sal*.6);log(`เกษียณจากงาน${S.job[1]} มีงานเลี้ยงส่งอบอุ่น${S.pension?` ได้บำนาญเดือนละ ${fmt(S.pension)}`:''}`,'big');S.job=null;S.sal=0}
+ famYear();
+ S.kids=S.children.length;
+ // ผลจากการตัดสินใจในอดีต
+ S.later=S.later.filter(l=>{if(l.y<=y){l.f();return false}return true});
+ if(Math.random()<.4){const pool=events.filter(e=>a>=e[0]&&a<=e[1]&&(!e[4]||e[4](S)));if(pool.length){const e=pick(pool);fx(e[3]);log(e[2],tone(e[3]))}}
+ else if(Math.random()<.25){const v=VIBE.find(v=>y>=v[0]&&y<=v[1]);if(v&&a>=8){log(pick(v[2]),'good');fx({h:2})}}
+ if(a===S.end&&S.edu>0)log(S.edu===2?'เรียนจบปริญญาตรี ใส่ชุดครุยถ่ายรูปกับครอบครัว':'เรียนจบ ปวส.','big');
+ if(a<60)S.he=Math.max(S.he,15);
+ S.hs+=S.h;S.ys++;
+ if(a>=65&&(Math.random()<(a-65)*.012+(100-S.he)/1500||a>=98))return die();
+ pending=getChoice();render();
+}
+
+function jobChoice(){
+ const el=shuffle(jobs.filter(j=>j[2]<=S.edu&&S.k>=j[3]-15&&S.y>=j[5]&&S.y<=j[6]&&(!S.job||j[1]!==S.job[1]))).slice(0,3);
+ const o=el.map(j=>{const ch=S.k>=j[3]?100:60,pay=V(j[4]);return{t:j[1],d:`${j[0]} · เริ่ม ${fmt(pay)}/เดือน · โอกาสติด ${ch}%`,f:()=>{
+  if(Math.random()*100<ch){S.job=j;S.sal=Math.round(pay*(1+S.c/300));log(`ได้งานเป็น${j[1]} เงินเดือน ${fmt(S.sal)}`,'good');fx({h:5})}
+  else{log(`สมัครงาน${j[1]}แล้วไม่ผ่าน ปีหน้าลองใหม่`,'bad');fx({h:-3})}}}});
+ if(S.job)o.push({t:'อยู่ที่เดิมต่อ',d:`ทำงาน${S.job[1]}ต่อไป`,f:()=>{}});
+ return{q:S.job?'มีตำแหน่งงานใหม่เปิดรับ จะสมัครไหม':`ถึงเวลาหางาน ปี ${S.y} มีตำแหน่งเหล่านี้เปิดรับ`,o};
+}
+function bizChoice(){
+ const aff=bizs.filter(b=>V(b[1])<=S.money&&S.y>=b[5]&&S.y<=b[6]);
+ if(!aff.length)return{q:`เงินเก็บยังไม่พอเปิดกิจการ ตอนนี้มี ${fmt(S.money)}`,o:[{t:'เก็บเงินต่ออีกหน่อย',d:'ไว้ลองใหม่ปีหน้า',f:()=>{}}]};
+ const o=shuffle(aff).slice(0,3).map(b=>({t:b[0],d:`ลงทุน ${fmt(V(b[1]))} · กำไรต่อปี ${fmt(V(b[2]))} ถึง ${fmt(V(b[3]))} · เสี่ยง${b[4]>=.2?'สูง':b[4]>=.1?'ปานกลาง':'ต่ำ'}`,f:()=>{S.money-=V(b[1]);S.biz=b;S.bizy=0;log(`เปิด${b[0]}เป็นของตัวเอง`,'big')}}));
+ o.push({t:'ยังไม่เปิดดีกว่า',d:'เก็บเงินไว้ก่อน',f:()=>{}});
+ return{q:`ปี ${S.y} สุ่มได้ไอเดียธุรกิจเหล่านี้ จะเลือกอันไหน`,o};
+}
+// คำถามตามเหตุการณ์จริงของแต่ละปี
+function eraChoice(){
+ const y=S.y,a=S.age;
+ if([2509,2521,2541].includes(y)&&a>=8&&a<=35)return{imp:1,q:'เอเชียนเกมส์มาจัดที่กรุงเทพฯ จะร่วมงานแบบไหน',o:[
+  {t:'ไปเชียร์ที่สนาม',d:'ความสุข + จ่ายค่าตั๋ว',f:()=>fx({h:6,m:-2000})},{t:'สมัครเป็นอาสาสมัครงาน',d:'เส้นสาย + ได้ประสบการณ์',f:()=>fx({c:8,h:3,k:2})},{t:'ดูทางทีวีที่บ้าน',d:'สบายๆ',f:()=>fx({h:2})}]};
+ if(y===2540&&a>=20&&S.money>0)return{imp:1,q:`ค่าเงินบาทลอยตัว เศรษฐกิจทรุดหนัก จะทำอย่างไรกับเงินเก็บ ${fmt(S.money)}`,o:[
+  {t:'ถือเงินสดไว้ก่อน',d:'ปลอดภัย แต่ใจไม่สงบ',f:()=>fx({h:-2})},
+  {t:'ช้อนซื้อที่ดินราคาถูก',d:'ใช้เงินครึ่งหนึ่ง หวังผลระยะยาว',f:()=>{const x=Math.round(S.money/2);S.money-=x;later(R(6,10),()=>{const g=Math.round(x*R(25,45)/10);S.money+=g;log(`ที่ดินที่ช้อนซื้อตอนต้มยำกุ้งขายได้ ${fmt(g)}`,'good');fx({h:6})})}},
+  {t:'ทุ่มเล่นหุ้นต่อ',d:'เสี่ยงมาก',f:()=>{const x=Math.round(S.money*.6);S.money-=x;if(Math.random()<.3){S.money+=x*2;log('หุ้นที่ถือเด้งกลับ ได้กำไรเท่าตัว','good')}else{S.money+=Math.round(x*.3);log('หุ้นร่วงหนัก เหลือเงินไม่ถึงครึ่ง','bad');fx({h:-6})}}}]};
+ if(y===2542&&a>=18&&!S.home)return{imp:1,q:'รถไฟฟ้า BTS เปิดแล้ว จะย้ายไปอยู่ใกล้สถานีไหม',o:[
+  {t:'ย้ายไปห้องเช่าใกล้ BTS',d:'ค่าเช่าแพงขึ้น แต่ไม่ต้องเจอรถติด',f:()=>{S.nearRail=true;fx({h:5,m:-40000})}},{t:'อยู่บ้านเดิม',d:'ประหยัดเงิน',f:()=>fx({m:10000})}]};
+ if(y===2554&&a>=15)return{imp:1,q:'มวลน้ำก้อนใหญ่กำลังเข้ากรุงเทพฯ จะรับมืออย่างไร',o:[
+  {t:'ยกของขึ้นที่สูงแล้วอยู่บ้าน',d:'ประหยัด แต่เหนื่อย',f:()=>fx({h:-4,m:-30000,he:-2})},{t:'อพยพไปบ้านญาติต่างจังหวัด',d:'ปลอดภัยกว่า',f:()=>fx({m:-15000,h:-1})},
+  {t:'ไปเป็นอาสากรอกกระสอบทราย',d:'เหนื่อยแต่อิ่มใจ',f:()=>fx({h:4,c:8,he:-2})}]};
+ if(y===2563&&a>=18&&a<60)return{imp:1,q:'โควิดระบาด ทั้งเมืองล็อกดาวน์ จะใช้ช่วงนี้ทำอะไร',o:[
+  {t:'ทำงานจากบ้าน เก็บเงิน',d:'ประหยัดค่าเดินทาง',f:()=>fx({m:20000,h:-2})},
+  {t:'เปิดร้านขายของออนไลน์',d:S.biz?'มีธุรกิจอยู่แล้ว ลองขายออนไลน์เพิ่ม':'ลงทุน ฿50,000 (ราคาปี 2569)',f:()=>{if(S.biz)fx({m:R(0,80000),c:3});else{S.biz=bizs.find(b=>b[0]==='ร้านเสื้อผ้าออนไลน์');S.bizy=0;S.money-=V(50000);log('เปิดร้านเสื้อผ้าออนไลน์ช่วงโควิด','big')}}},
+  {t:'เรียนทักษะใหม่ออนไลน์',d:'ความรู้ +',f:()=>fx({k:8})}]};
+ if(y===2564&&a>=18&&a<=60&&S.money>0)return{imp:1,q:'เพื่อนชวนลงทุนคริปโตที่ราคากำลังพุ่ง',o:[
+  {t:'ลงนิดหน่อยพอสนุก',d:'10% ของเงินเก็บ',f:()=>crypto(.1)},{t:'ลงหนักไปเลย',d:'ครึ่งหนึ่งของเงินเก็บ',f:()=>crypto(.5)},{t:'ไม่ลง',d:'ไม่ใช่ทางของเรา',f:()=>{}}]};
+ return null;
+}
+function crypto(r){const x=Math.round(S.money*r);S.money-=x;later(2,()=>{const g=Math.round(x*pick([.2,.35,.5,1.5,3]));S.money+=g;log(g>x?`ขายคริปโตได้กำไร เหลือ ${fmt(g)}`:`ราคาคริปโตตกหนัก เหลือแค่ ${fmt(g)}`,g>x?'good':'bad');fx({h:g>x?5:-5})})}
+// คำถามชีวิตที่มีผลตามมา
+function dilemma(){
+ const a=S.age,d=[];
+ d.push({q:'เพื่อนสนิทขอยืมเงิน ฿50,000 (ราคาปี 2569)',o:[{t:'ให้ยืม',d:'อาจได้คืน อาจไม่ได้คืน',f:()=>{const x=V(50000);S.money-=x;later(1,()=>{if(Math.random()<.6){S.money+=x;fx({c:6,h:2});log('เพื่อนคืนเงินพร้อมขอบคุณ มิตรภาพแน่นขึ้น','good')}else{fx({h:-5,c:-2});log('เพื่อนเงียบหาย ไม่ได้เงินคืน','bad')}})}},{t:'ปฏิเสธอย่างสุภาพ',d:'เก็บเงินไว้ แต่เพื่อนอาจน้อยใจ',f:()=>fx({c:-3})}]});
+ d.push({q:`เจอกระเป๋าเงินตกบน${S.y>=2542?'รถไฟฟ้า':'รถเมล์'}`,o:[{t:'ตามหาเจ้าของเพื่อคืน',d:'ใจดีมีบุญ',f:()=>{fx({h:4,c:4});log('คืนกระเป๋าให้เจ้าของ ได้เพื่อนใหม่','good')}},{t:'เก็บไว้เอง',d:'ได้เงิน แต่รู้สึกผิด',f:()=>fx({m:3000,h:-5})}]});
+ if(a>=24&&a<=45&&S.job)d.push({q:'ได้ข้อเสนอไปทำงานต่างประเทศ 3 ปี',o:[{t:'ไปลองดู',d:'เงินดีขึ้น ได้ประสบการณ์ แต่คิดถึงบ้าน',f:()=>{S.sal=Math.round(S.sal*1.6);fx({h:-4,k:8,c:5});log('ย้ายไปทำงานต่างประเทศ','big');later(3,()=>{fx({h:6});log('กลับมาอยู่กรุงเทพฯ พร้อมประสบการณ์ใหม่','good')})}},{t:'อยู่กรุงเทพฯ ต่อ',d:'อยู่ใกล้ครอบครัว',f:()=>fx({h:2})}]});
+ const par=S.parents.filter(p=>p.alive&&S.y-p.by>=62);
+ if(par.length)d.push({q:`${par.map(p=>p.rel+p.name).join(' และ')} เริ่มป่วย ต้องมีคนคอยดูแล`,o:[{t:'ดูแลเอง',d:'ได้อยู่ใกล้ แต่รายได้ลด',f:()=>{S.sal=Math.round(S.sal*.85);fx({h:4,he:-2});par.forEach(p=>p.close=cl(p.close+15))}},{t:'จ้างผู้ดูแล',d:'จ่ายปีละ ฿150,000 (ราคาปี 2569)',f:()=>{fx({m:-150000,h:1});par.forEach(p=>p.close=cl(p.close+3))}},{t:'ให้พี่น้องผลัดกันดูแล',d:'แบ่งภาระ',f:()=>fx({c:-1,h:2})}]});
+ if(a>=26&&a<=50&&!S.home&&S.money>V(500000))d.push({q:'จะซื้อบ้านหรือคอนโดผ่อนยาว 20 ปีไหม',o:[{t:'ซื้อเลย',d:`ราคาราว ${fmt(V(2500000))} วางเงินดาวน์ 20%`,f:()=>{const p=V(2500000);S.money-=p*.2;S.home={v:p,pay:Math.round(p*.8*1.6/20),left:20};fx({h:6});log('ซื้อบ้านหลังแรกของตัวเอง','big')}},{t:'เช่าต่อไปก่อน',d:'ยืดหยุ่นกว่า',f:()=>{}}]});
+ if(a>=20&&a<=55)d.push({q:'มีคนชวนทำธุรกิจขายตรง บอกว่ารวยเร็ว',o:[{t:'ลองดู',d:'ลงทุน ฿30,000 (ราคาปี 2569)',f:()=>{S.money-=V(30000);if(Math.random()<.25){S.money+=V(120000);log('ขายตรงไปได้ดีกว่าที่คิด','good')}else{fx({h:-4,c:-3});log('ขายไม่ออก ของค้างเต็มห้อง','bad')}}},{t:'ปฏิเสธ',d:'ไม่เสี่ยง',f:()=>{}}]});
+ const teen=S.children.find(c=>S.y-c.by>=15&&S.y-c.by<=18&&!c.asked);
+ if(teen)d.push({q:`${teen.name} อยากเรียนสายศิลปะและดนตรี ไม่อยากเรียนสายที่ที่บ้านหวังไว้`,o:[{t:'สนับสนุนเต็มที่',d:'จ่ายค่าเรียนพิเศษ ลูกใกล้ชิดขึ้น',f:()=>{teen.asked=1;teen.dream=1;teen.close=cl(teen.close+12);fx({m:-80000,h:3});log(`สนับสนุนความฝันของ${teen.name}`,'good')}},{t:'ให้เรียนสายที่มั่นคงกว่า',d:'ลูกอาจน้อยใจ',f:()=>{teen.asked=1;teen.close=cl(teen.close-12);log(`${teen.name}ไม่ค่อยพอใจ แต่ก็ยอมเรียนตามที่บ้านอยาก`,'bad')}}]});
+ const grown=S.children.find(c=>S.y-c.by>=25&&!c.helped);
+ if(grown&&S.money>V(300000))d.push({q:`${grown.name} อยากเปิดร้านของตัวเอง ขอเงินช่วยตั้งตัว`,o:[{t:'ช่วยเงินก้อนหนึ่ง',d:'฿200,000 (ราคาปี 2569)',f:()=>{grown.helped=1;const x=V(200000);S.money-=x;grown.money+=x;grown.close=cl(grown.close+12);log(`ช่วยทุน${grown.name}เปิดร้าน ลูกซึ้งใจมาก`,'good')}},{t:'ให้ลองหาทุนเอง',d:'ฝึกให้ยืนด้วยตัวเอง',f:()=>{grown.helped=1;grown.close=cl(grown.close-6)}}]});
+ if(S.partner)d.push({q:`${S.partner.name} ชวนไปเที่ยวต่างประเทศด้วยกันสองคน`,o:[{t:'ไปกันเลย',d:'มีค่าใช้จ่าย แต่ได้ความทรงจำดีๆ',f:()=>{fx({m:-60000,h:6});S.partner.close=cl(S.partner.close+12);log(`ไปเที่ยวญี่ปุ่นกับ${S.partner.name} สนุกมาก`,'good')}},{t:'ไว้ปีหน้า',d:'ประหยัดเงินไว้ก่อน',f:()=>{S.partner.close=cl(S.partner.close-5)}}]});
+ const c=pick(d);c.imp=1;return c;
+}
+function getChoice(){
+ const a=S.age;
+ if(a<6)return eraChoice();
+ if(a===6)return{q:'ถึงเวลาเข้าโรงเรียน ที่บ้านจะส่งไปเรียนที่ไหน',imp:1,o:[
+  {t:'โรงเรียนรัฐใกล้บ้าน',d:'เพื่อนเยอะ เดินไปเรียนได้',f:()=>{S.sch=2;fx({c:3})}},
+  {t:'โรงเรียนเอกชน',d:'ความรู้แน่นขึ้น',ok:S.fam.m>=80000,f:()=>{S.sch=3}},
+  {t:'โรงเรียนนานาชาติ',d:'ได้ภาษาและเส้นสาย',ok:S.fam.m>=500000&&S.y>=2515,f:()=>{S.sch=4;fx({c:10})}}]};
+ if(a===18)return{imp:1,q:'เรียนจบ ม.6 แล้ว จะไปทางไหนต่อ',o:[
+  {t:'เข้ามหาวิทยาลัย',d:S.k>=50?'คะแนนถึง สอบติดมหาวิทยาลัยรัฐ':'เรียนเอกชน จ่ายค่าเทอม',f:()=>{S.edu=2;S.end=22;if(S.k<50)S.money-=V(200000);log(S.k>=50?'สอบติดมหาวิทยาลัยรัฐ ครอบครัวภูมิใจมาก':'เข้าเรียนมหาวิทยาลัยเอกชน','good')}},
+  {t:'เรียนสายอาชีพ ปวส.',d:'ได้ทักษะเร็ว เริ่มงานไว',f:()=>{S.edu=1;S.end=20;log('เข้าเรียน ปวส.','good')}},
+  {t:'เริ่มทำงานเลย',d:'มีรายได้ตั้งแต่ตอนนี้',f:()=>{S.edu=0;S.end=18;return jobChoice()}}]};
+ if(S.id&&!S.out&&a>=S.idAge)return{imp:1,q:`เริ่มรู้ตัวว่าตัวเองเป็น${S.id} จะทำอย่างไรต่อ`,o:[
+  {t:'เปิดใจคุยกับครอบครัว',d:'กล้าเป็นตัวเอง',f:()=>{S.out=true;const p=Math.min(.9,.35+(S.y-2500)/140);if(Math.random()<p){fx({h:10});log(`เปิดตัวกับครอบครัวว่าเป็น${S.id} ทุกคนกอดและยอมรับ`,'good')}else{fx({h:-4});log('ครอบครัวยังทำใจไม่ได้ ต้องใช้เวลา','bad');later(R(3,7),()=>{fx({h:10});log('ในที่สุดครอบครัวก็เข้าใจและยอมรับในตัวตน','good')})}}},
+  {t:'บอกเพื่อนสนิทก่อน',d:'มีคนข้างๆ คอยเป็นกำลังใจ',f:()=>{S.out=true;fx({h:5,c:3});log(`บอกเพื่อนสนิทว่าเป็น${S.id} เพื่อนบอกว่าเป็นตัวเองได้เต็มที่`,'good')}},
+  {t:'เก็บไว้ในใจก่อน',d:'ยังไม่พร้อม ค่อยเป็นค่อยไป',f:()=>{fx({h:-2});S.idAge=a+R(4,8)}}]};
+ if(S.partner&&!S.married&&S.y>=2568&&S.pg)return{imp:1,q:`กฎหมายสมรสเท่าเทียมมีผลแล้ว จะจดทะเบียนสมรสกับ${S.partner.name}ไหม`,o:[
+  {t:'จดทะเบียนสมรส',d:'ได้สิทธิคู่สมรสตามกฎหมาย',f:()=>{S.married=true;S.partner.close=cl(S.partner.close+10);fx({h:10,c:3});log(`จดทะเบียนสมรสตามกฎหมายสมรสเท่าเทียม เพื่อนๆ มาร่วมยินดีเต็มเขต${S.d[0]}`,'big')}},
+  {t:'อยู่ด้วยกันแบบเดิม',d:'ใช้ชีวิตคู่ต่อไปตามสบาย',f:()=>{S.married=true;fx({h:2})}}]};
+ const era=eraChoice();if(era)return era;
+ if(a<18)return{q:`อายุ ${a} ปี ปีนี้จะใช้เวลากับอะไรเป็นหลัก`,o:[
+  {t:'ตั้งใจเรียน',d:'ความรู้ +',f:()=>fx({k:R(4,8),h:-1})},{t:'เล่นกีฬา',d:'สุขภาพ + ความสุข +',f:()=>fx({he:5,h:3})},
+  {t:'เที่ยวกับเพื่อน',d:'ความสุข + เส้นสาย +',f:()=>fx({h:5,c:4,k:-1})},{t:'ช่วยที่บ้านขายของ',d:'ได้เงินเก็บ',f:()=>fx({c:2,k:1,m:R(3000,10000)})}]};
+ if(a<S.end)return{q:`ปีที่ ${a-17} ของการเรียน จะโฟกัสอะไร`,o:[
+  {t:'ตั้งใจเรียน',d:'ความรู้ +',f:()=>fx({k:6})},{t:'ทำกิจกรรมชมรม',d:'เส้นสาย + ความสุข +',f:()=>fx({c:6,h:3})},
+  {t:'ทำงานพาร์ทไทม์',d:'ได้เงินเก็บ',f:()=>fx({m:R(30000,60000),c:2})},{t:'มีความรักครั้งแรก',d:'ความสุข +',f:()=>fx({h:8})}]};
+ if(!S.job&&!S.biz&&a<60)return jobChoice();
+ if(a>=22&&a<=45&&!S.partner&&Math.random()<.3){
+  const ps=partnerSex(),c=person('คู่ชีวิต',ps,S.y-a-R(-4,5),{job:pick(jobsAt(S.y)),money:V(R(20000,600000)),close:R(65,85)});
+  const where=pick(S.y>=2542?['สถานีรถไฟฟ้าสยาม','ร้านกาแฟแถวอารีย์','งานวิ่งสวนลุมฯ','ตลาดนัดจตุจักร','แอปหาคู่']:['ป้ายรถเมล์หน้าสยาม','งานวัดภูเขาทอง','ตลาดนัดสนามหลวง','โรงหนังเฉลิมกรุง']);
+  return{imp:1,q:`เจอ${c.name}ที่${where} อายุ ${S.y-c.by} ปี เป็น${c.job} นิสัย${c.trait}`,o:[
+  {t:'คบกันจริงจัง',d:'ความสุข + ค่าใช้จ่าย +',f:()=>{S.partner=c;S.pg=c.sex===S.sex;fx({h:10});if(S.pg&&S.y<2568){log(`เริ่มต้นชีวิตคู่กับ${c.name} ยังจดทะเบียนสมรสตามกฎหมายไม่ได้ แต่ใช้ชีวิตด้วยกันอย่างมีความสุข`,'big')}else{S.married=true;log(`แต่งงานกับ${c.name} จัดงานเลี้ยงที่เขต${S.d[0]}`,'big')}}},
+  {t:'ขอโฟกัสตัวเองก่อน',d:'ค่อยว่ากันอีกที',f:()=>fx({k:2})}]}}
+ if(S.partner&&S.kids<3&&a<=44&&Math.random()<.25)return{imp:1,q:`คุยกับ${S.partner.name}เรื่องการมีลูก`,o:[
+  {t:S.pg?'อยากมีลูก หรือรับเด็กมาเลี้ยง':'อยากมีลูก',d:'ความสุข + ค่าใช้จ่ายเพิ่ม',f:()=>{const k=person('ลูก',pick(['ชาย','หญิง']),S.pg?S.y-R(0,3):S.y,{close:R(80,95)});S.children.push(k);S.kids=S.children.length;S.partner.close=cl(S.partner.close+6);fx({h:8});log(S.pg?`ครอบครัวรับ${k.name}มาเป็นลูกคนที่ ${S.kids}`:`ลูก${k.sex==='ชาย'?'ชาย':'สาว'}คนที่ ${S.kids} ชื่อ ${k.name} เกิดที่โรงพยาบาลในกรุงเทพฯ`,'big')}},
+  {t:'ยังไม่พร้อม',d:'ใช้ชีวิตสองคนต่อ',f:()=>fx({h:2})}]};
+ if(a>=20&&Math.random()<.18)return dilemma();
+ if(a>=60)return{q:`วัยเกษียณ อายุ ${a} ปี ปีนี้จะทำอะไร`,o:[
+  {t:'เที่ยวต่างจังหวัด',d:'ความสุข + มีค่าใช้จ่าย',f:()=>fx({h:6,m:-30000})},{t:'ดูแลสุขภาพ',d:'สุขภาพ +',f:()=>fx({he:5})},
+  {t:'เลี้ยงหลาน',d:'ความสุข + ลูกหลานใกล้ชิด',ok:S.grand.length>0,f:()=>{fx({h:7});bondAll(0,3,6)}},{t:'เข้าวัดทำบุญ',d:'ใจสงบ',f:()=>fx({h:4,he:1})}]};
+ const o=[
+  {t:'ทุ่มเทกับงาน',d:'รายได้โตเร็ว แต่เหนื่อย',f:()=>{S.sal=Math.round(S.sal*1.08);fx({he:-3,h:-2,c:2});bondAll(0,-6,-5,-2)}},
+  {t:'ดูแลสุขภาพ',d:'วิ่งที่สวนลุมฯ ทุกเช้า',f:()=>fx({he:6,h:2})},
+  {t:'ใช้เวลากับคนที่รัก',d:'ครอบครัวใกล้ชิดขึ้น',f:()=>{fx({h:6,c:2});bondAll(0,10,8,6)}},
+  {t:'ลงคอร์สเรียนเพิ่ม',d:'ความรู้ + มีค่าเรียน',f:()=>fx({k:6,m:-20000})},
+  {t:'หางานใหม่',d:'สุ่มตำแหน่งที่เปิดรับ',f:()=>jobChoice()}];
+ if(!S.biz&&a<=58)o.push({t:'เปิดธุรกิจของตัวเอง',d:'สุ่มไอเดียธุรกิจตามยุค',f:()=>bizChoice()});
+ if(S.biz){const v=Math.round(V(S.biz[1])*(.6+Math.min(S.bizy,10)*.15));o.push({t:`ขาย${S.biz[0]}`,d:`ได้เงินราว ${fmt(v)}`,f:()=>{S.money+=v;log(`ขาย${S.biz[0]}ได้ ${fmt(v)}`,'good');S.biz=null}})}
+ return{q:`อายุ ${a} ปี ปีนี้จะโฟกัสอะไร`,o};
+}
+function choose(i){
+ const op=pending&&pending.o[i];if(!op||op.ok===false)return;
+ if(!pending.sub)S.mark=S.log.length;
+ const r=op.f();
+ if(r&&r.o){r.sub=1;pending=r;render()}else nextYear();
+}
+function die(){
+ S.alive=false;pending=null;
+ log(`จากไปอย่างสงบในวัย ${S.age} ปี เมื่อ พ.ศ. ${S.y} ที่บ้านในเขต${S.d[0]} รายล้อมด้วยคนที่รัก`,'big');
+ const avg=Math.round(S.hs/Math.max(1,S.ys));
+ S.title=avg>=75?'ชีวิตดีมากๆ':avg>=60?'ชีวิตที่อบอุ่น':avg>=45?'ชีวิตที่มีขึ้นมีลง':'ชีวิตที่สู้มาตลอด';
+ S.avg=avg;S.worth=S.money+(S.home?S.home.v:0);
+ try{const p=JSON.parse(localStorage.getItem('bkk-lives')||'[]');p.unshift({n:S.name,d:S.d[0],by:S.by,dy:S.y,t:S.title});localStorage.setItem('bkk-lives',JSON.stringify(p.slice(0,8)))}catch(e){}
+ stopAuto();render();
+}
+const bar=(l,v,c='')=>`<div class="bar"><label><span>${l}</span><span>${v}</span></label><div class="track"><div class="fill ${c}" style="width:${v}%"></div></div></div>`;
+function past(){let p=[];try{p=JSON.parse(localStorage.getItem('bkk-lives')||'[]')}catch(e){}
+ return p.length?`<h2 style="margin-top:18px">ชีวิตที่ผ่านมา</h2><div class="past">${p.map(x=>`<div><span>${x.n} · ${x.d} · พ.ศ. ${x.by}–${x.dy}</span><span>${x.t}</span></div>`).join('')}</div>`:''}
+function status(p,pa){if(p.rel==='ลูก'||p.rel==='หลาน'){if(pa<6)return'เด็กเล็ก';if(pa<18)return'นักเรียน';if(!p.job)return'นักศึกษา'}return p.job||'-'}
+function prow(p){const alive=p.alive,pa=(alive?S.y:p.dy||S.y)-p.by,cl2=closeLab(p.close);
+ const deep=p.rel==='คู่ชีวิต'||p.rel==='ลูก';
+ const sub=!alive?`จากไปเมื่อ พ.ศ. ${p.dy} อายุ ${pa} ปี`:p.rel==='อดีตคนรัก'?`อายุ ${pa} ปี · แยกทางกันแล้ว`:`อายุ ${pa} ปี · ${status(p,pa)}${p.parent?` · ลูกของ${p.parent}`:''}`;
+ const det=alive&&p.rel!=='อดีตคนรัก'?`<div class="pd">${deep?`นิสัย${p.trait}${pa>=18?` · เงินเก็บ <span class="money">${fmt(p.money)}</span>`:''}<br>`:''}${p.rel!=='หลาน'?`<span class="rel ${cl2[1]}">${cl2[0]}</span>`:''}</div>`:'';
+ return `<div class="pp"><div class="av${alive?'':' dead'}">${avatar(p.look,Math.max(0,pa),prOf(p),status(p,pa))}</div><div><div class="pn">${p.name} <span class="tag">${p.rel}</span></div><div class="pd">${sub}</div>${det}</div></div>`}
+function renderFamily(){
+ const g=(t,a)=>a.length?`<div class="fh">${t}</div>${a.map(prow).join('')}`:'';
+ const partners=[...(S.partner?[S.partner]:[]),...S.exes];
+ $('#family').innerHTML=`<h2>ครอบครัวและคนสำคัญ</h2>${g('พ่อแม่',S.parents)}${g('คนรัก',partners)}${g('ลูก',S.children)}${g('หลาน',S.grand)}`;
+}
+const tagc=c=>c==='บันเทิง'?'b':c==='กรุงเทพฯ'||c==='กีฬา'?'c':'';
+function render(){
+ if(!S){
+  $('#idcard').innerHTML=`<div class="idtop"><span>บัตรชีวิต กรุงเทพมหานคร</span><span class="chip">ยังไม่เกิด</span></div><div class="nm">ใครก็ได้</div><p class="mut">ทุกคนเกิดที่กรุงเทพฯ ช่วง พ.ศ. 2500–${NOW} ส่วนเขต ครอบครัว และโอกาสในชีวิตจะถูกสุ่ม</p>${past()}`;
+  $('#year').innerHTML='';$('#family').innerHTML='<h2>ครอบครัวและคนสำคัญ</h2><p class="mut">พ่อ แม่ คนรัก ลูก และหลาน จะปรากฏที่นี่เมื่อเกิดแล้ว</p>';
+  $('#choice').innerHTML=`<div class="start"><h2>พร้อมเกิดที่กรุงเทพฯ หรือยัง</h2>
+   <div class="r"><label for="me" class="mut">ปีเกิดจริงของคุณ (ไม่บังคับ ใช้เทียบอายุกับข่าวแต่ละปี)</label></div>
+   <div class="r"><input id="me" type="number" inputmode="numeric" min="2480" max="${NOW}" placeholder="เช่น 2535" value="${me||''}"></div>
+   <div class="r"><button class="main" id="born">สุ่มปีเกิด</button><button class="ghost" id="bornme">เกิดปีเดียวกับฉัน</button></div></div>`;
+  $('#log').innerHTML='<li><span class="a"></span><span class="mut">ยังไม่มีเรื่องราว</span></li>';return}
+ const fam=S.partner?`${S.married?'แต่งงาน':'มีคู่ชีวิต'}${S.kids?` · ลูก ${S.kids} คน`:''}${S.grand.length?` · หลาน ${S.grand.length} คน`:''}`:S.exes.some(x=>x.rel==='คู่ชีวิต')?'คู่ชีวิตจากไปแล้ว':'โสด';
+ $('#idcard').innerHTML=`<div class="idtop"><span>บัตรชีวิต กรุงเทพมหานคร</span><span class="chip">เขต${S.d[0]}</span></div>
+  <div class="who"><div class="av lg${S.alive?'':' dead'}">${avatar(S.look,S.age,prMe(),S.job?S.job[1]:'')}</div><div><div class="nm">${S.name}</div><div class="mut">เพศกำเนิด${S.sex}${S.id&&S.out?` · <span class="tag b">${S.id}</span>`:''} · เกิด พ.ศ. ${S.by}</div><div class="mut">${S.fam.n}</div></div></div>
+  <div class="age"><b>${S.age}</b><span>ปี · พ.ศ. ${S.y}</span></div>
+  <div class="rows">
+   <div class="row"><span>อาชีพ</span><span>${S.job?`${S.job[1]} <span class="money">(${fmt(S.sal)}/ด.)</span>`:S.pension?'เกษียณ รับบำนาญ':S.age>=60?'เกษียณ':S.age>=18&&S.age<S.end?'นักศึกษา':S.age>=6&&S.age<18?'นักเรียน':S.age<6?'เด็กเล็ก':'กำลังหางาน'}</span></div>
+   <div class="row"><span>ธุรกิจ</span><span>${S.biz?`${S.biz[0]} (ปีที่ ${S.bizy})`:'ยังไม่มี'}</span></div>
+   <div class="row"><span>เงินเก็บ</span><span class="money">${fmt(S.money)}</span></div>
+   <div class="row"><span>บ้าน</span><span>${S.home?`มีบ้านของตัวเอง${S.home.left?` (ผ่อนอีก ${S.home.left} ปี)`:''}`:S.age<18?'บ้านพ่อแม่':'เช่าอยู่'}</span></div>
+   <div class="row"><span>ครอบครัว</span><span>${S.age<18?'อยู่กับพ่อแม่':fam}${S.married&&S.pg?' (จดทะเบียนตามกฎหมายสมรสเท่าเทียม)':''}</span></div>
+  </div>
+  ${bar('ความสุข',S.h)}${bar('สุขภาพ',S.he,'y')}${bar('ความรู้',S.k,'p')}${bar('เส้นสาย',S.c,'p')}`;
+ const fresh=S.log.slice(0,Math.max(0,S.log.length-S.mark)).filter(l=>l.c!=='news').reverse();
+ $('#year').innerHTML=`<div class="story"><div class="sy"><b>พ.ศ. ${S.y}</b><span>${S.name} อายุ ${S.age} ปี${me&&S.y>=me?` · ตัวคุณจริง ${S.y-me} ปี`:''}</span></div>
+  <ul class="st">${fresh.length?fresh.map(l=>`<li class="${l.c}">${l.t}</li>`).join(''):'<li>ปีนี้ชีวิตดำเนินไปอย่างเรียบๆ ในกรุงเทพฯ</li>'}</ul>
+  ${S.news.length?`<div class="newsline">${S.news.map(n=>`<div><span class="tag ${tagc(n[1])}">${n[1]}</span>${n[2]}</div>`).join('')}</div>`:''}</div>`;
+ renderFamily();
+ if(!S.alive){
+  $('#choice').innerHTML=`<div class="end"><b>${S.title}</b>${S.name} อยู่กรุงเทพฯ ตั้งแต่ พ.ศ. ${S.by} ถึง ${S.y} รวม ${S.age} ปี ความสุขเฉลี่ย ${S.avg}/100 ทรัพย์สินที่ทิ้งไว้ ${fmt(S.worth)}</div><button class="main" id="again">เกิดใหม่อีกครั้ง</button> <button class="ghost" id="home">กลับหน้าแรก</button>${past()}`;
+ }else if(pending){
+  $('#choice').innerHTML=`<h2>${pending.imp?'<span class="tag b">คำถามสำคัญ · ต้องตอบก่อนไปต่อ</span><br>':''}${pending.q}</h2><div class="opts">${pending.o.map((o,i)=>`<button class="opt" data-i="${i}" ${o.ok===false?'disabled':''}>${o.t}<small>${o.ok===false?'ยังเลือกไม่ได้ในชีวิตนี้':o.d||''}</small></button>`).join('')}</div>`;
+ }else{
+  $('#choice').innerHTML=`<h2>${S.age<6?'วัยเด็กเล็ก ยังไม่ต้องตัดสินใจอะไร':'ปีนี้ผ่านไปอย่างเรียบง่าย'}</h2><button class="main" id="next">ปีถัดไป</button>`;
+ }
+ $('#log').innerHTML=S.log.map(l=>`<li class="${l.c==='news'?'n':''}"><span class="a">พ.ศ. ${l.y}<br>${l.a} ปี</span><span class="${l.c}">${l.c==='news'?'ข่าว · ':''}${l.t}</span></li>`).join('');
+}
+function step(){
+ if(!S){newLife();return}
+ if(!S.alive){stopAuto();return}
+ if(pending){if(pending.imp)return .4;const ok=pending.o.map((o,i)=>[o,i]).filter(x=>x[0].ok!==false);choose(pick(ok)[1])}else{S.mark=S.log.length;nextYear()}
+ const big=S.log.slice(0,Math.max(0,S.log.length-S.mark)).some(l=>l.c==='big');return big?1.8:1;
+}
+function loop(){if(!running)return;const k=step()||1;if(running)timer=setTimeout(loop,speed*k)}
+function startTimer(){clearTimeout(timer);running=true;timer=setTimeout(loop,speed*.5)}
+function stopAuto(){clearTimeout(timer);running=false;timer=null;$('#auto').setAttribute('aria-pressed','false');$('#auto').textContent='เล่นอัตโนมัติ'}
+function readMe(){const v=+($('#me')&&$('#me').value);if(v>=2480&&v<=NOW){me=v;try{localStorage.setItem('bkk-me',v)}catch(e){}}return me}
+$('#auto').addEventListener('click',()=>{if(running)return stopAuto();if(S&&!S.alive)newLife();startTimer();$('#auto').setAttribute('aria-pressed','true');$('#auto').textContent='หยุดอัตโนมัติ'});
+$('#speed').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;speed=+b.dataset.s;for(const x of $('#speed').children)x.setAttribute('aria-pressed',x===b?'true':'false');if(running)startTimer()});
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t||t.closest('#speed')||t.id==='auto')return;
+ if(t.id==='born'){readMe();newLife()}
+ else if(t.id==='bornme'){const m=readMe();if(m&&m>=2500)newLife(m);else{const i=$('#me');if(i){i.focus();i.placeholder='ใส่ปี 2500–'+NOW}}}
+ else if(t.id==='again')newLife();else if(t.id==='home'){S=null;render()}
+ else if(t.id==='next'){S.mark=S.log.length;nextYear()}else if(t.dataset.i!=null)choose(+t.dataset.i)});
+render();
+}
+</script>
+</body>
+</html>
