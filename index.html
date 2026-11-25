@@ -250,11 +250,12 @@ function famYear(){
   if(p.rel==='ญาติ'&&pa>=65&&Math.random()<(pa-65)*.012+.004){p.alive=false;p.dy=y;log(`${p.sub}${p.name}${p.star?` (${p.stage})`:''} จากไปในวัย ${pa} ปี`,p.star?'big':'bad');fx({h:p.close>=60?-5:-1});continue}
   if(p.fameAt&&pa===p.fameAt&&!p.star){makeStar(p,y);log(`${p.rel==='เพื่อน'?'เพื่อนสมัย'+p.from:p.sub} ${p.name} กลายเป็น${p.star}ในชื่อ "${p.stage}" เปิดทีวีทีไรก็เจอ`,'big');fx({h:3,c:4})}
   if(p.rel==='เพื่อน'||p.rel==='ญาติ'){p.close=cl(p.close-R(0,2));if(pa>=22&&!p.star&&!p.job)p.job=pick(jobsAt(y));continue}
-  if((p.rel==='พ่อ'||p.rel==='แม่'||p.rel==='คู่ชีวิต')&&pa>=62&&Math.random()<(pa-62)*.011+.004){p.alive=false;p.dy=y;log(`${p.rel==='คู่ชีวิต'?'คู่ชีวิต':p.rel} (${p.name}) จากไปอย่างสงบในวัย ${pa} ปี`,'big');fx({h:-10});if(p.rel==='คู่ชีวิต'){S.exes.push(p);S.partner=null;S.married=false}continue}
+  if((p.rel==='พ่อ'||p.rel==='แม่'||p.rel==='คู่ชีวิต')&&pa>=62&&Math.random()<(pa-62)*.011+.004){p.alive=false;p.dy=y;log(`${p.rel==='คู่ชีวิต'?'คู่ชีวิต':p.rel} (${p.name}) จากไปอย่างสงบในวัย ${pa} ปี`,'big');fx({h:-10});if(p.rel==='คู่ชีวิต'){S.exes.push(p);S.partner=null;S.married=false;if(p.st==='married'){S.widow=1;log('กลายเป็นหม้าย ต้องเริ่มต้นชีวิตใหม่คนเดียว','bad')}}continue}
   if((p.rel==='พ่อ'||p.rel==='แม่')&&pa===60&&p.job&&p.job!=='แม่บ้าน')p.job=`เกษียณแล้ว (เคยเป็น${p.job})`;
   if(p.rel==='พ่อ'||p.rel==='แม่'){if(S.age>=18)p.close=cl(p.close-R(0,2))}
   if(p.rel==='คู่ชีวิต'){p.money+=V(R(10000,90000));p.close=cl(p.close-R(0,2));if(pa===60)p.job=`เกษียณแล้ว (เคยเป็น${p.job})`;
-   if(p.close<20&&Math.random()<.2){log(`ทะเลาะกับ${p.name}บ่อยขึ้น สุดท้ายตัดสินใจแยกทางกัน`,'bad');fx({h:-10});p.rel='อดีตคนรัก';p.dy=null;S.exes.push(p);S.partner=null;S.married=false}}
+   if(p.close<20&&Math.random()<.2){log(`ทะเลาะกับ${p.name}บ่อยขึ้นจนไปต่อไม่ไหว`,'bad');endRel()}
+   if(p.cheat&&Math.random()<.3){log(`จับได้ว่า${p.name}กลับไปนอกใจซ้ำอีก ครั้งนี้ให้อภัยไม่ไหวแล้ว`,'bad');endRel()}}
   if(p.rel==='ลูก'){
    if(pa===18&&Math.random()<.75){const us=UNIS.filter(u=>y>=u[1]),u=pick(us);p.fac=p.dream?'fine':pick(u[4]);p.uni=u[0];if(!u[4].includes(p.fac))p.uni='มหาวิทยาลัยศิลปากร';log(`${p.name}สอบติดคณะ${FAC[p.fac][0]} ${p.uni}`,'good');fx({h:4})}
    if(pa===(p.dream?21:22)){p.job=p.fac&&!p.dream?pick(FACJOB[p.fac]):p.dream?pick(['นักดนตรี','กราฟิกดีไซเนอร์','นักวาดภาพประกอบ','นักพัฒนาเกม']):pick(jobsAt(y));log(`${p.name} ลูก${p.sex==='ชาย'?'ชาย':'สาว'} เรียนจบและได้งานเป็น${p.job}`,'good');fx({h:4})}
@@ -339,7 +340,7 @@ function nextYear(){
  const rentC=S.rent&&!(S.jail>0)?rp(S.rent.k,y)*12:0;
  if(a>=18){const kidsC=S.children.filter(c=>y-c.by<22).length*Math.max(V(36000),Math.round(gross*.1));
   const withPar=!S.home&&!S.rent&&S.parents.some(p=>p.alive);
-  let base=S.jail>0?V(20000):withPar?V(40000):V(a>=60?50000:60000)+rentC+(S.partner?V(20000):0);
+  let base=S.jail>0?V(20000):withPar?V(40000):V(a>=60?50000:60000)+rentC+(S.partner&&S.partner.st==='married'?V(20000):0);
   const life=Math.round(gross*(a>=60?.2:.38));
   if(a>=60){const sup=S.children.filter(c=>c.alive&&y-c.by>=23&&c.close>=35).length*V(30000);if(sup){inc+=sup;gross+=sup}if(y>=2552){inc+=9000;gross+=9000}}
   const c=base+life+kidsC;inc-=c;cost+=c}
@@ -403,6 +404,73 @@ function openOpts(){
 function failChoice(){return{imp:1,q:'สอบไม่ติด จะทำอย่างไรต่อ',o:[...openOpts(),
  {t:'ซิ่ว อ่านหนังสือสอบใหม่ปีหน้า',d:'เสียเวลาหนึ่งปี แต่ความรู้เพิ่ม',f:()=>{S.retry=S.age+1;S.end=S.age+1;fx({k:8,h:-3});log('ตัดสินใจซิ่ว ไปติวที่สยามเพื่อสอบใหม่ปีหน้า','')}},
  {t:'เรียน ปวส. แทน',d:'จบเร็ว ได้ทำงานไว',f:()=>{S.edu=1;S.end=S.age+2;log('เข้าเรียน ปวส.','')}}]}}
+// ---------- ชีวิตคู่ ----------
+const HOTELS=[['โรงแรมเอราวัณ',2500,2530],['โรงแรมโอเรียนเต็ล',2500,2528],['โรงแรมแมนดาริน โอเรียนเต็ล',2529,9999],['โรงแรมดุสิตธานี',2513,2561],['โรงแรมดุสิตธานีโฉมใหม่',2567,9999],['โรงแรมแชงกรี-ลา',2529,9999],['โรงแรมเดอะ เพนนินซูลา',2541,9999],['โรงแรมสยาม เคมปินสกี้',2553,9999]];
+const yrsTogether=()=>S.partner?S.y-S.partner.since:0;
+function endRel(txt,div){const p=S.partner;if(!p)return;const wasM=p.st==='married';p.rel='อดีตคนรัก';p.div=wasM;p.st='';p.dy=null;p.endY=S.y;S.exes.push(p);S.partner=null;S.married=false;S.pg=false;fx({h:wasM?-14:-9});
+ if(wasM){const fee=V(40000);S.money-=fee;if(S.money>0)S.money=Math.round(S.money*.65);S.children.forEach(c=>c.close=cl(c.close-10));log(txt||`หย่ากับ${p.name} เสียค่าทนาย ${fmt(fee)} และแบ่งทรัพย์สินกันไปคนละส่วน`,'bad')}else log(txt||`เลิกกับ${p.name}`,'bad')}
+function wedding(){const P=S.partner,y=S.y,hs=HOTELS.filter(h=>y>=h[1]&&y<=h[2]),h=pick(hs),legal=!S.pg||y>=2568;
+ const done=(t,c,fxx)=>{P.st='married';S.married=legal;S.money-=V(c);fx(fxx);P.close=cl(P.close+10);S.parents.forEach(p=>p.close=cl(p.close+5));log(`${t}${legal?'':' (ยังจดทะเบียนตามกฎหมายไม่ได้ จึงเป็นงานแต่งตามประเพณี)'}`,'big')};
+ const o=[{t:`จดทะเบียนที่สำนักงานเขต${S.d[0]}`,d:`เรียบง่าย เลี้ยงเล็กๆ ${fmt(V(30000))}`,f:()=>done(`จดทะเบียนสมรสกับ${P.name}ที่สำนักงานเขต${S.d[0]} แล้วเลี้ยงข้าวกันในครอบครัว`,30000,{h:6})}];
+ if(y>=2540)o.push({t:'จดทะเบียนวันวาเลนไทน์ที่เขตบางรัก',d:'คู่รักต่อคิวกันแน่น ได้ใบทะเบียนลายพิเศษ',f:()=>done(`จดทะเบียนสมรสกับ${P.name}วันวาเลนไทน์ที่สำนักงานเขตบางรัก`,20000,{h:7})});
+ o.push({t:'แต่งที่บ้านตามประเพณี',d:`ขันหมาก รดน้ำสังข์ ${fmt(V(180000))}`,f:()=>done(`แต่งงานกับ${P.name}ที่บ้านตามประเพณี มีขบวนขันหมากเต็มซอย`,180000,{h:8,c:3})});
+ if(h)o.push({t:`จัดงานเลี้ยงที่${h[0]}`,d:`หรูหรา แขกเต็มห้อง ${fmt(V(700000))}`,f:()=>done(`จัดงานแต่งงานกับ${P.name}ที่${h[0]} แขกมาร่วมงานหลายร้อยคน`,700000,{h:10,c:8})});
+ return{imp:1,q:`จะแต่งงานกับ${P.name}แบบไหน`,o};}
+function babyNow(withEx){const k=person('ลูก',pick(['ชาย','หญิง']),S.y,{close:withEx?R(40,60):R(80,95)});if(withEx)k.withEx=1;S.children.push(k);S.kids=S.children.length;return k}
+function relChoice(){
+ const P=S.partner,a=S.age;
+ // อดีตคนรักกลับมา
+ if(!P){const ex=S.exes.filter(x=>x.alive&&x.rel==='อดีตคนรัก'&&!x.closed);if(ex.length&&Math.random()<.12){const x=pick(ex);return{imp:1,q:`${x.name} อดีต${x.div?'คู่สมรส':'แฟน'} ทักมาหลังจากเลิกกันไป ${S.y-(x.endY||S.y-1)||1} ปี ถามว่ายังคิดถึงกันไหม`,o:[
+  {t:'กลับไปคุยกันใหม่',d:'อาจได้เริ่มต้นใหม่ หรือเจ็บซ้ำ',f:()=>{S.exes=S.exes.filter(e=>e!==x);x.rel='คู่ชีวิต';x.st='dating';x.since=S.y;x.close=R(45,70);x.cheat=0;S.partner=x;S.pg=x.sex===S.sex;fx({h:5});log(`กลับมาคบกับ${x.name}อีกครั้ง`,'big')}},
+  {t:'ตอบไปว่าจบแล้ว',d:'ปิดฉากอย่างสงบ',f:()=>{x.closed=1;fx({h:2});log(`บอก${x.name}ว่าเรื่องของเราจบแล้ว`,'')}},
+  {t:'แก้แค้นให้เจ็บ',d:'ทำทีกลับไปคุย แล้วเท',f:()=>{x.closed=1;if(Math.random()<.5){fx({h:4});log(`หลอกให้${x.name}กลับมาหวัง แล้วเทกลางทาง สะใจแต่ก็ว่างเปล่า`,'')}else{fx({h:-4,c:-4});log(`แผนแก้แค้น${x.name}รั่ว เพื่อนในกลุ่มรู้กันหมด`,'bad')}}}]}}return null}
+ const yt=yrsTogether();
+ if(P.st==='break'){return{imp:1,q:`ห่างกับ${P.name}มาสักพักแล้ว ${P.name}ทักมาว่าอยากคุยกันใหม่`,o:[
+  {t:'กลับมาคบกันต่อ',d:'เริ่มใหม่ด้วยกัน',f:()=>{P.st='dating';P.close=R(50,70);fx({h:4});log(`คืนดีกับ${P.name}`,'good')}},
+  {t:'ขอจบแค่นี้',d:'ต่างคนต่างไป',f:()=>endRel(`ตัดสินใจเลิกกับ${P.name}หลังห่างกันไปพักใหญ่`)},
+  {t:'ขอเวลาอีกหน่อย',d:'ยังไม่แน่ใจ',f:()=>{P.close=cl(P.close-8);if(P.close<25)endRel(`${P.name}รอไม่ไหว ขอเลิกไปเอง`)}}]}}
+ if(P.st==='engaged')return wedding();
+ if(Math.random()>(P.st==='dating'?.45:.15))return null;
+ const ev=[];
+ if(P.st==='dating'){
+  if(yt>=1)ev.push(()=>({imp:1,q:`คบกับ${P.name}มา ${yt} ปีแล้ว จะขอแต่งงานไหม`,o:[
+   {t:'ขอแต่งงานเลย',d:`โอกาสได้คำตอบตกลงราว ${Math.min(95,P.close+15)}%`,f:()=>{if(Math.random()*100<P.close+15){P.st='engaged';fx({h:8});log(`ขอ${P.name}แต่งงานที่${pick(['ริมแม่น้ำเจ้าพระยา','ร้านอาหารบนดาดฟ้า','สวนลุมพินี','หน้าบ้าน'])} ${P.name}ตอบตกลงทั้งน้ำตา`,'big')}else{P.close=cl(P.close-15);fx({h:-8});log(`ขอ${P.name}แต่งงาน แต่${P.name}บอกว่ายังไม่พร้อม บรรยากาศอึดอัดไปหลายวัน`,'bad')}}},
+   {t:'ยังไม่พร้อม คบกันไปก่อน',d:'ไม่รีบ',f:()=>{P.close=cl(P.close-4)}}]}));
+  if(yt>=1)ev.push(()=>({imp:1,q:`${P.name}เซอร์ไพรซ์ขอแต่งงานกลางงานเลี้ยงวันเกิด ต่อหน้าเพื่อนทุกคน!`,o:[
+   {t:'ตอบตกลง',d:'เริ่มวางแผนงานแต่ง',f:()=>{P.st='engaged';fx({h:10});log(`ตอบตกลงแต่งงานกับ${P.name} เพื่อนๆ กรี๊ดลั่นร้าน`,'big')}},
+   {t:'ขอเวลาคิดก่อน',d:`${P.name}อาจเสียใจ`,f:()=>{P.close=cl(P.close-12);log(`ขอเวลาคิด ${P.name}หน้าเสียไปทั้งคืน`,'bad')}},
+   {t:'ปฏิเสธ',d:'ยังไม่ใช่คนนี้',f:()=>endRel(`ปฏิเสธคำขอแต่งงานต่อหน้าเพื่อน แล้วก็เลิกกับ${P.name}`)}]}));
+  if(!S.pg&&a<=42)ev.push(()=>({imp:1,q:`${S.sex==='หญิง'?'ตรวจพบว่าเรา':P.name+'บอกว่า'}ตั้งท้องทั้งที่ยังไม่ได้แต่งงาน`,o:[
+   {t:'แต่งงานเลย',d:'จัดงานด่วนก่อนท้องโต',f:()=>{P.st='engaged';fx({h:2});log('ตัดสินใจแต่งงานก่อนลูกคลอด','big');return wedding()}},
+   {t:'มีลูกด้วยกันโดยยังไม่แต่ง',d:'ญาติผู้ใหญ่อาจไม่พอใจ',f:()=>{const k=babyNow();S.parents.forEach(p=>p.close=cl(p.close-8));fx({h:4});log(`${k.name}เกิดมาโดยพ่อแม่ยังไม่ได้แต่งงาน`,'big')}},
+   {t:'เลิกกัน แต่ส่งเสียเลี้ยงดูลูก',d:'ต้องจ่ายค่าเลี้ยงดูทุกปี',f:()=>{const k=babyNow(1);endRel(`เลิกกับ${P.name} ลูกชื่อ${k.name}อยู่กับอีกฝ่าย ต้องส่งค่าเลี้ยงดูทุกเดือน`)}}]}));
+  ev.push(()=>({imp:1,q:`ทะเลาะกับ${P.name}หนักมาก ${P.name}ขอห่างกันสักพัก`,o:[
+   {t:'ยอมห่างกันสักพัก',d:'ให้เวลาต่างคนต่างคิด',f:()=>{P.st='break';fx({h:-5});log(`ห่างกับ${P.name}สักพัก`,'bad')}},
+   {t:'ง้อสุดชีวิต',d:'ซื้อดอกไม้ ไปรอหน้าบ้าน',f:()=>{if(Math.random()<.55){P.close=cl(P.close+8);log(`ง้อ${P.name}สำเร็จ คืนดีกัน`,'good')}else{P.st='break';fx({h:-6});log(`ง้อไม่สำเร็จ ${P.name}ขอห่างไปก่อน`,'bad')}}},
+   {t:'งั้นเลิกกันเลย',d:'ไม่ทนอีกต่อไป',f:()=>endRel()}]}));
+  ev.push(()=>({imp:1,q:`ที่บ้านไม่ค่อยชอบ${P.name} บอกให้เลิกคบ`,o:[
+   {t:'ยืนยันคบต่อ',d:'พ่อแม่จะห่างเหินลง',f:()=>{S.parents.forEach(p=>p.close=cl(p.close-10));P.close=cl(P.close+8);log(`ยืนยันกับที่บ้านว่าจะคบ${P.name}ต่อ`,'')}},
+   {t:'ยอมเลิกตามที่บ้านขอ',d:'พ่อแม่สบายใจ',f:()=>{S.parents.forEach(p=>p.close=cl(p.close+6));endRel(`ยอมเลิกกับ${P.name}ตามที่ครอบครัวขอ`)}}]}));
+ }
+ ev.push(()=>({imp:1,q:`จับได้ว่า${P.name}แอบคุยกับคนอื่น${S.y>=2550?' เห็นแชตในมือถือชัดเจน':' มีคนเห็นไปเดินห้างด้วยกัน'}`,o:[
+  {t:'ให้อภัย ให้โอกาสอีกครั้ง',d:'ความไว้ใจลดลง อาจโดนซ้ำ',f:()=>{P.cheat=1;P.close=cl(P.close-15);fx({h:-6});log(`ให้อภัย${P.name}ที่นอกใจ แต่ใจยังไม่หายดี`,'bad')}},
+  {t:P.st==='married'?'ฟ้องหย่า':'เลิกทันที',d:'จบความสัมพันธ์',f:()=>endRel(P.st==='married'?`ฟ้องหย่า${P.name}เพราะนอกใจ ได้ค่าทดแทนบางส่วน`:`เลิกกับ${P.name}เพราะโดนนอกใจ`)},
+  {t:S.y>=2550?'โพสต์ประจานลงโซเชียล':'ไปอาละวาดถึงที่ทำงาน',d:'สะใจ แต่มีความเสี่ยง',f:()=>{endRel(`เลิกกับ${P.name}แบบไม่เหลือเยื่อใย`);if(Math.random()<.5){fx({c:4,h:3});log(S.y>=2550?'โพสต์ไวรัล คนเข้ามาให้กำลังใจเพียบ':'ทุกคนในที่ทำงานของเขารู้เรื่องหมด','')}else{S.money-=V(50000);fx({h:-5});log(S.y>=2550?`โดนฟ้องหมิ่นประมาท ต้องจ่ายค่าเสียหาย ${fmt(V(50000))}`:'โดน รปภ. เชิญออก แถมโดนแจ้งความ เสียค่าปรับ','bad')}}}]}));
+ if(S.job||a>=22)ev.push(()=>({imp:1,q:`มีคนที่ทำงานมาจีบอย่างจริงจัง ทั้งที่รู้ว่าเรามี${P.st==='married'?'ครอบครัว':'แฟน'}แล้ว`,o:[
+  {t:'ปฏิเสธชัดเจน',d:'ซื่อสัตย์ต่อคนรัก',f:()=>{P.close=cl(P.close+3);log('ปฏิเสธคนที่มาจีบอย่างชัดเจน','good')}},
+  {t:'แอบคุยเล่นๆ',d:'ตื่นเต้น แต่เสี่ยงมาก',f:()=>{fx({h:3});if(Math.random()<.45){log(`${P.name}จับได้ว่าเราแอบคุยกับคนอื่น`,'bad');if(Math.random()<.5)endRel(`${P.name}ขอ${P.st==='married'?'หย่า':'เลิก'}เพราะเรานอกใจ`);else{P.close=cl(P.close-25);fx({h:-6})}}}}]}));
+ if(P.st==='married'){
+  ev.push(()=>({imp:1,q:`ครบรอบแต่งงาน ${yt} ปีกับ${P.name}`,o:[
+   {t:'เซอร์ไพรซ์ทริปพิเศษ',d:`${fmt(V(40000))} ใกล้ชิดขึ้นมาก`,f:()=>{fx({m:-40000,h:5});P.close=cl(P.close+12);log(`พา${P.name}ไปเที่ยวฉลองครบรอบแต่งงาน`,'good')}},
+   {t:'กินข้าวที่บ้านง่ายๆ',d:'อบอุ่นเรียบง่าย',f:()=>{P.close=cl(P.close+3)}},
+   {t:'ลืมวันครบรอบ',d:'ยุ่งกับงานมาก',f:()=>{P.close=cl(P.close-10);log(`ลืมวันครบรอบแต่งงาน ${P.name}งอนไปทั้งสัปดาห์`,'bad')}}]}));
+  ev.push(()=>({imp:1,q:`ทะเลาะกับ${P.name}เรื่อง${pick(['เงินไม่พอใช้','การเลี้ยงลูก','ญาติฝั่งเขา','ใครต้องทำงานบ้าน'])}จนบ้านแทบแตก`,o:[
+   {t:'ไปปรึกษาที่ปรึกษาครอบครัว',d:`${fmt(V(15000))} มีโอกาสดีขึ้น`,f:()=>{fx({m:-15000});if(Math.random()<.7){P.close=cl(P.close+15);log('ปรึกษาผู้เชี่ยวชาญ คุยกันเข้าใจมากขึ้น','good')}else{P.close=cl(P.close-5);log('ไปปรึกษาแล้วก็ยังไม่ดีขึ้น','bad')}}},
+   {t:'แยกกันอยู่สักพัก',d:'ให้ต่างคนต่างใจเย็น',f:()=>{P.close=cl(P.close-6);fx({h:-4});if(Math.random()<.35)endRel(`แยกกันอยู่กับ${P.name}นานจนตัดสินใจหย่า`);else log(`แยกกันอยู่พักหนึ่งก่อนกลับมาคุยกันได้`,'')}},
+   {t:'ฟ้องหย่า',d:'จบปัญหาทั้งหมด',f:()=>endRel()}]}));
+ }
+ return pick(ev)();
+}
 function jobChoice(){
  const okJ=jobs.filter(j=>j[2]<=Math.max(0,S.edu)&&S.k>=j[3]-15&&S.y>=j[5]&&S.y<=j[6]&&(!S.job||j[1]!==S.job[1])&&(!LOCK[j[1]]||LOCK[j[1]]===S.fac));
  const mt=S.fac?shuffle(okJ.filter(j=>FACJOB[S.fac].includes(j[1]))).slice(0,2):[];
@@ -653,7 +721,7 @@ function getChoice(){
   {t:'เปิดใจคุยกับครอบครัว',d:'กล้าเป็นตัวเอง',f:()=>{S.out=true;const p=Math.min(.9,.35+(S.y-2500)/140);if(Math.random()<p){fx({h:10});log(`เปิดตัวกับครอบครัวว่าเป็น${S.id} ทุกคนกอดและยอมรับ`,'good')}else{fx({h:-4});log('ครอบครัวยังทำใจไม่ได้ ต้องใช้เวลา','bad');later(R(3,7),()=>{fx({h:10});log('ในที่สุดครอบครัวก็เข้าใจและยอมรับในตัวตน','good')})}}},
   {t:'บอกเพื่อนสนิทก่อน',d:'มีคนข้างๆ คอยเป็นกำลังใจ',f:()=>{S.out=true;fx({h:5,c:3});log(`บอกเพื่อนสนิทว่าเป็น${S.id} เพื่อนบอกว่าเป็นตัวเองได้เต็มที่`,'good')}},
   {t:'เก็บไว้ในใจก่อน',d:'ยังไม่พร้อม ค่อยเป็นค่อยไป',f:()=>{fx({h:-2});S.idAge=a+R(4,8)}}]};
- if(S.partner&&!S.married&&S.y>=2568&&S.pg)return{imp:1,q:`กฎหมายสมรสเท่าเทียมมีผลแล้ว จะจดทะเบียนสมรสกับ${S.partner.name}ไหม`,o:[
+ if(S.partner&&S.partner.st==='married'&&!S.married&&S.y>=2568&&S.pg)return{imp:1,q:`กฎหมายสมรสเท่าเทียมมีผลแล้ว จะจดทะเบียนสมรสกับ${S.partner.name}ไหม`,o:[
   {t:'จดทะเบียนสมรส',d:'ได้สิทธิคู่สมรสตามกฎหมาย',f:()=>{S.married=true;S.partner.close=cl(S.partner.close+10);fx({h:10,c:3});log(`จดทะเบียนสมรสตามกฎหมายสมรสเท่าเทียม เพื่อนๆ มาร่วมยินดีเต็มเขต${S.d[0]}`,'big')}},
   {t:'อยู่ด้วยกันแบบเดิม',d:'ใช้ชีวิตคู่ต่อไปตามสบาย',f:()=>{S.married=true;fx({h:2})}}]};
  const era=eraChoice();if(era)return era;
@@ -673,13 +741,14 @@ function getChoice(){
   {t:'ตั้งใจเรียน',d:'ความรู้ +',f:()=>fx({k:6})},{t:'ทำกิจกรรมชมรม',d:'เส้นสาย + ความสุข +',f:()=>fx({c:6,h:3})},
   {t:'ทำงานพาร์ทไทม์',d:'ได้เงินเก็บ',f:()=>fx({m:R(30000,60000),c:2})},{t:'มีความรักครั้งแรก',d:'ความสุข +',f:()=>fx({h:8})}]};
  if(!S.job&&!S.biz&&a<60)return jobChoice();
- if(a>=22&&a<=45&&!S.partner&&Math.random()<.2){
+ const rq=relChoice();if(rq)return rq;
+ if(a>=20&&a<=(S.widow||S.exes.length?62:45)&&!S.partner&&Math.random()<(a>45?.1:.22)){
   const ps=partnerSex(),c=person('คู่ชีวิต',ps,S.y-a-R(-4,5),{job:pick(jobsAt(S.y)),money:V(R(20000,600000)),close:R(65,85)});
   const where=pick(S.y>=2542?['สถานีรถไฟฟ้าสยาม','ร้านกาแฟแถวอารีย์','งานวิ่งสวนลุมฯ','ตลาดนัดจตุจักร','แอปหาคู่']:['ป้ายรถเมล์หน้าสยาม','งานวัดภูเขาทอง','ตลาดนัดสนามหลวง','โรงหนังเฉลิมกรุง']);
   return{imp:1,q:`เจอ${c.name}ที่${where} อายุ ${S.y-c.by} ปี เป็น${c.job} นิสัย${c.trait}`,o:[
-  {t:'คบกันจริงจัง',d:'ความสุข + ค่าใช้จ่าย +',f:()=>{S.partner=c;S.pg=c.sex===S.sex;fx({h:10});if(S.pg&&S.y<2568){log(`เริ่มต้นชีวิตคู่กับ${c.name} ยังจดทะเบียนสมรสตามกฎหมายไม่ได้ แต่ใช้ชีวิตด้วยกันอย่างมีความสุข`,'big')}else{S.married=true;log(`แต่งงานกับ${c.name} จัดงานเลี้ยงที่เขต${S.d[0]}`,'big')}}},
+  {t:'ลองคบกัน',d:'เริ่มเป็นแฟน ยังไม่ต้องคิดไกล',f:()=>{S.partner=c;c.st='dating';c.since=S.y;S.pg=c.sex===S.sex;fx({h:9});log(`เริ่มคบกับ${c.name}เป็นแฟน${S.widow?' หลังจากเป็นหม้ายมาหลายปี':S.exes.some(x=>x.rel==='อดีตคนรัก')?' หลังจากโสดมาสักพัก':''}`,'big')}},
   {t:'ขอโฟกัสตัวเองก่อน',d:'ค่อยว่ากันอีกที',f:()=>fx({k:2})}]}}
- if(S.partner&&S.kids<3&&a<=44&&Math.random()<.18)return{imp:1,q:`คุยกับ${S.partner.name}เรื่องการมีลูก`,o:[
+ if(S.partner&&S.partner.st==='married'&&S.kids<3&&a<=44&&Math.random()<.2)return{imp:1,q:`คุยกับ${S.partner.name}เรื่องการมีลูก`,o:[
   {t:S.pg?'อยากมีลูก หรือรับเด็กมาเลี้ยง':'อยากมีลูก',d:'ความสุข + ค่าใช้จ่ายเพิ่ม',f:()=>{const k=person('ลูก',pick(['ชาย','หญิง']),S.pg?S.y-R(0,3):S.y,{close:R(80,95)});S.children.push(k);S.kids=S.children.length;S.partner.close=cl(S.partner.close+6);fx({h:8});log(S.pg?`ครอบครัวรับ${k.name}มาเป็นลูกคนที่ ${S.kids}`:`ลูก${k.sex==='ชาย'?'ชาย':'สาว'}คนที่ ${S.kids} ชื่อ ${k.name} เกิดที่โรงพยาบาลในกรุงเทพฯ`,'big')}},
   {t:'ยังไม่พร้อม',d:'ใช้ชีวิตสองคนต่อ',f:()=>fx({h:2})}]};
  if(a>=18){const scn=sceneChoice();if(scn&&scn.o)return scn}
@@ -733,7 +802,7 @@ function past(){let p=[];try{p=JSON.parse(localStorage.getItem('bkk-lives')||'[]
 function status(p,pa){if(p.rel==='ลูก'||p.rel==='หลาน'){if(pa<6)return'เด็กเล็ก';if(pa<18)return'นักเรียน';if(!p.job)return p.fac?`นักศึกษาคณะ${FAC[p.fac][0]} ${p.uni}`:'นักศึกษา'}return p.job||'-'}
 function prow(p){const alive=p.alive,pa=(alive?S.y:p.dy||S.y)-p.by,cl2=closeLab(p.close);
  const deep=p.rel==='คู่ชีวิต'||p.rel==='ลูก';
- const rl=p.rel==='ญาติ'?p.sub:p.rel;
+ const rl=p.rel==='ญาติ'?p.sub:p.rel==='คู่ชีวิต'?({dating:'แฟน',break:'แฟน (ห่างกันอยู่)',engaged:'คู่หมั้น',married:S.pg&&!S.married?'คู่ชีวิต':'คู่สมรส'}[p.st]||'คู่ชีวิต'):p.rel==='อดีตคนรัก'?(p.div?'อดีตคู่สมรส':'อดีตแฟน'):p.rel==='ลูก'&&p.withEx?'ลูก (อยู่กับอีกฝ่าย)':p.rel;
  const sub=!alive?`จากไปเมื่อ พ.ศ. ${p.dy} อายุ ${pa} ปี`:p.rel==='อดีตคนรัก'?`อายุ ${pa} ปี · แยกทางกันแล้ว`:`อายุ ${pa} ปี · ${status(p,pa)}${p.parent?` · ลูกของ${p.parent}`:''}`;
  const det=alive&&p.rel!=='อดีตคนรัก'?`<div class="pd">${deep?`นิสัย${p.trait}${pa>=18?` · เงินเก็บ <span class="money">${fmt(p.money)}</span>`:''}<br>`:''}${p.rel!=='หลาน'?`<span class="rel ${cl2[1]}">${cl2[0]}</span>`:''}</div>`:'';
  return `<div class="pp"><div class="av${alive?'':' dead'}">${avatar(p.look,Math.max(0,pa),prOf(p),status(p,pa))}</div><div><div class="pn">${p.name} <span class="tag">${rl}</span>${p.star?' <span class="tag c">คนดัง</span>':''}</div><div class="pd">${sub}${p.star?`<br>ชื่อในวงการ "${p.stage}"`:''}${p.from&&!p.star?` · เพื่อนสมัย${p.from}`:''}</div>${det}</div></div>`}
@@ -759,7 +828,7 @@ function render(){
    <div class="r"><input id="me" type="number" inputmode="numeric" min="2480" max="${NOW}" placeholder="เช่น 2535" value="${me||''}"></div>
    <div class="r"><button class="main" id="born">สุ่มปีเกิด</button><button class="ghost" id="bornme">เกิดปีเดียวกับฉัน</button></div></div>`;
   $('#log').innerHTML='<li><span class="a"></span><span class="mut">ยังไม่มีเรื่องราว</span></li>';return}
- const fam=S.partner?`${S.married?'แต่งงาน':'มีคู่ชีวิต'}${S.kids?` · ลูก ${S.kids} คน`:''}${S.grand.length?` · หลาน ${S.grand.length} คน`:''}`:S.exes.some(x=>x.rel==='คู่ชีวิต')?'คู่ชีวิตจากไปแล้ว':'โสด';
+ const fam=S.partner?`${({dating:'มีแฟน',break:'ห่างกับแฟนอยู่',engaged:'หมั้นแล้ว',married:S.married?'แต่งงานแล้ว':'อยู่กินด้วยกัน'})[S.partner.st]||'มีคู่ชีวิต'}${S.kids?` · ลูก ${S.kids} คน`:''}${S.grand.length?` · หลาน ${S.grand.length} คน`:''}`:S.widow?'เป็นหม้าย':S.exes.some(x=>x.div)?'หย่าแล้ว':'โสด';
  $('#idcard').innerHTML=`<div class="idtop"><span>บัตรชีวิต กรุงเทพมหานคร</span><span class="chip">เขต${S.d[0]}</span></div>
   <div class="who"><div class="av lg${S.alive?'':' dead'}">${avatar(S.look,S.age,prMe(),S.job?S.job[1]:'')}</div><div><div class="nm">${S.name}</div><div class="mut">เพศกำเนิด${S.sex}${S.id&&S.out?` · <span class="tag b">${S.id}</span>`:''} · เกิด พ.ศ. ${S.by}</div><div class="mut">${S.fam.n}</div></div></div>
   <div class="age"><b>${S.age}</b><span>ปี · พ.ศ. ${S.y}</span></div>
