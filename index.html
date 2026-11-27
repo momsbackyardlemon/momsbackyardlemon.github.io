@@ -726,6 +726,7 @@ function ACTS(){const a=S.age,y=S.y,g=goldP(y);return[
  ...(y>=2562&&a>=13?[{t:'ทำคลิปลง TikTok',d:'อาจไวรัล หรือโดนทัวร์ลง',f:()=>{const r=Math.random();if(r<.15){fx({c:10,h:6,m:20000});log('คลิปไวรัลหลักล้านวิว มีแบรนด์ทักมาจ้างรีวิว','good')}else if(r<.3){fx({h:-7,c:-4});log('คลิปโดนทัวร์ลง คอมเมนต์ด่าเป็นพัน','bad')}else{fx({h:1});log('ทำคลิปลง TikTok ได้ยอดวิวนิดหน่อย','')}}}]:[]),
  ...(a>=20?[{t:S.home||S.rent?'ย้ายบ้าน ซื้อหรือเช่า':'หาที่อยู่ของตัวเอง',d:'บ้านเดี่ยว ทาวน์เฮาส์ คอนโด บ้านเช่า',f:()=>homeChoice()}]:[]),
  ...(a>=18&&S.y>=2505?[{t:S.car?'เปลี่ยนรถ หรือขายรถ':'ดูรถที่โชว์รูม',d:'รุ่นฮิตของปีนี้',f:()=>carChoice()}]:[]),
+ ...(S.partner&&S.partner.st==='dating'&&a>=18?[{t:`ขอ${S.partner.name}แต่งงาน`,d:`คบกันมา ${Math.max(0,S.y-S.partner.since)} ปี · ${closeLab(S.partner.close)[0]}`,f:()=>proposeChoice()}]:[]),
  ...(a>=35&&S.children.concat(S.grand,S.great).some(c=>c.alive)?[{t:'โอนเงินหรือทรัพย์สินให้ลูกหลาน',d:'เลือกคนและสิ่งที่จะให้',f:()=>giveKin()}]:[]),
  ...(a>=55&&S.children.concat(S.grand).some(c=>c.alive&&S.y-c.by>=22)?[{t:'ขอเงินช่วยเหลือจากลูกหลาน',d:'ดูว่าใครพอช่วยได้',f:()=>askKin()}]:[]),
  ...(a>=12?[{t:'เรียนภาษาอังกฤษ',d:`ความรู้ + ${fmt(V(5000))}`,f:()=>{fx({k:4,m:-5000});log('ลงเรียนภาษาอังกฤษตอนเย็น','good')}}]:[])
@@ -758,6 +759,17 @@ function giveWhat(c){
  if(!o.length)o.push({t:'ตอนนี้ไม่มีอะไรจะให้',d:'',f:()=>{}});
  o.push({t:'เปลี่ยนใจ',d:'ยังไม่ให้',f:()=>{}});
  return{imp:1,q:`จะให้อะไร${c.name}`,o};
+}
+// ขอแต่งงาน
+function proposeChoice(){
+ const P=S.partner,yt=S.y-P.since,base=(P.soul?80:P.close)+(yt>=2?10:yt<1?-15:0)-(P.cheat?15:0);
+ const pl=[['ริมแม่น้ำเจ้าพระยาตอนพระอาทิตย์ตก',3000,5],['ร้านอาหารหรูบนดาดฟ้า',15000,10],['ที่ที่เจอกันครั้งแรก',0,P.soul?12:4],['กลางงานเลี้ยงต่อหน้าเพื่อนทุกคน',8000,P.close>=70?12:-10]];
+ if(S.y>=2540)pl.push(['ทริปญี่ปุ่นใต้ต้นซากุระ',60000,15]);
+ const o=pl.map(([w,c,b])=>{const pc=Math.max(5,Math.min(97,base+b));return{t:w,d:`${c?'ค่าใช้จ่ายราว '+fmt(V(c))+' · ':''}โอกาสได้คำตอบตกลงราว ${pc}%`,f:()=>{S.money-=V(c);
+  if(Math.random()*100<pc){P.st='engaged';P.close=cl(P.close+10);fx({h:12});log(`ขอ${P.name}แต่งงานที่${w} ${P.name}ตอบตกลงทั้งน้ำตา`,'big');return wedding()}
+  P.close=cl(P.close-15);fx({h:-10});log(`ขอ${P.name}แต่งงานที่${w} แต่${P.name}บอกว่ายังไม่พร้อม`,'bad');if(!P.soul&&P.close<25)endRel(`หลังโดนปฏิเสธคำขอแต่งงาน ความสัมพันธ์กับ${P.name}ก็จืดจางจนเลิกกัน`)}}});
+ o.push({t:'เปลี่ยนใจ ยังไม่ขอ',d:'',f:()=>{}});
+ return{imp:1,q:`จะขอ${P.name}แต่งงานที่ไหน`,o};
 }
 function doAct(i){
  if(!S||!S.alive||S.ap<=0||(pending&&(pending.imp||pending.sub)))return;const a=ACTS()[i];if(!a||a.ok===false)return;
