@@ -304,7 +304,7 @@ function newLife(by){
  const fam=wpick(families),d=pick(districts);
  by=by||R(2500,NOW);
  const sx=pick(['ชาย','หญิง']);
- S={by,y:by,name:'',sex:sx,look:mkLook(),d,fam,age:0,money:0,h:R(60,75),he:R(70,90),k:R(5,15),c:fam.c,edu:-1,sch:0,end:0,job:null,sal:0,biz:null,bizy:0,pension:0,partner:null,kids:0,parents:[],children:[],kin:[],friends:[],rent:null,withPar:0,grand:[],great:[],exes:[],mark:0,home:null,nearRail:false,married:false,id:null,idAge:R(13,17),out:false,later:[],ins:{health:false},car:null,off:0,seen:{},jail:0,gold:0,ap:0,lastF:-9,fin:null,lucky:Math.random()<.42,alive:true,hs:0,ys:0,log:[],news:[]};
+ S={by,y:by,name:'',sex:sx,look:mkLook(),d,fam,age:0,money:0,h:R(60,75),he:R(70,90),k:R(5,15),c:fam.c,edu:-1,sch:0,end:0,job:null,sal:0,biz:null,bizy:0,pension:0,partner:null,kids:0,parents:[],children:[],kin:[],friends:[],rent:null,withPar:0,grand:[],great:[],exes:[],mark:0,home:null,nearRail:false,married:false,id:null,idAge:R(13,17),out:false,later:[],ins:{health:false},car:null,off:0,seen:{},jail:0,gold:0,ap:0,lastF:-9,lk:R(30,70),fin:null,lucky:Math.random()<.42,alive:true,hs:0,ys:0,log:[],news:[]};
  if(Math.random()<.1){S.id=pick(IDS.filter(x=>S.sex==='ชาย'?x!=='เลสเบี้ยน'&&x!=='ผู้ชายข้ามเพศ':x!=='เกย์'&&x!=='ผู้หญิงข้ามเพศ'))}
  S.name=pick(NAMES[sx][by<2525?'old':'new']);
  const fi=families.indexOf(fam),fj=PJ[fi];
@@ -368,6 +368,7 @@ function nextYear(){
  if([2526,2538,2554].includes(y)){if(S.car&&Math.random()<(y===2554?.6:.4)){if(S.car.ins){fx({h:-2});log('น้ำท่วมใหญ่ รถที่จอดไว้จมน้ำมิดคัน ดีที่มีประกันชั้น 1 เคลมค่าซ่อมได้เต็มจำนวน','good')}else{const c=V(150000);S.money-=c;fx({h:-8});log(`น้ำท่วมใหญ่ รถจมน้ำมิดคัน ไม่มีประกันชั้น 1 ต้องจ่ายค่าซ่อมเอง ${fmt(c)}`,'bad')}}
   if(S.home&&Math.random()<HOUSE[S.home.k].flood){const c=V(120000);S.money-=c;fx({h:-5});log(`น้ำเข้าบ้านสูงครึ่งเมตร เฟอร์นิเจอร์ชั้นล่างเสียหาย ค่าซ่อม ${fmt(c)}`,'bad')}}
  if(a>=45)S.he=cl(S.he-R(0,2));
+ if(a>=35)S.lk=cl(S.lk-(Math.random()<.6?1:0));
  if(a===60&&S.job){if(['ราชการ','การศึกษา'].includes(S.job[0]))S.pension=Math.round(S.sal*.6);log(`เกษียณจากงาน${S.job[1]} มีงานเลี้ยงส่งอบอุ่น${S.pension?` ได้บำนาญเดือนละ ${fmt(S.pension)}`:''}`,'big');S.job=null;S.sal=0}
  famYear();
  if(S.jail>0){S.jail--;fx({h:-6,c:-3});if(S.jail===0){log('พ้นโทษ ออกจากเรือนจำ ครอบครัวมารอรับหน้าประตู ต้องเริ่มต้นชีวิตใหม่','big');fx({h:6})}}
@@ -469,6 +470,42 @@ function soulEvent(P,yt){
  if(m)ev.push(()=>{P.close=cl(P.close+5);fx({h:4,he:1});log(pick([`เดินเล่นสวนลุมฯ กับ${P.name}ทุกเย็น`,`${P.name}คอยเป็นกำลังใจตอนงานหนัก`,`เก็บเงินกับ${P.name}จนปิดหนี้ก้อนใหญ่ได้`,`นั่งดูละครหลังข่าวด้วยกันทุกคืน`,`${P.name}ยังจำเมนูโปรดของเราได้ทุกอย่าง`]),'good');if(Math.random()<.3)S.money+=V(30000);return null});
  if(m&&a>=60)ev.push(()=>{P.close=cl(P.close+6);fx({h:6});log(`แก่ไปด้วยกันกับ${P.name} ทุกเช้ายังนั่งจิบกาแฟด้วยกันหน้าบ้าน`,'good');return null});
  return pick(ev)();
+}
+// ผู้ที่อาจเป็นคนรัก
+function newCand(){const a=S.age;return person('คู่ชีวิต',partnerSex(),S.y-a-R(-4,5),{job:pick(jobsAt(S.y)),money:V(R(20000,600000)),close:R(60,80)+Math.round((S.lk-50)/5)})}
+function startDating(c,how){if(S.lucky&&!S.soulUsed){S.soulUsed=1;c.soul=1;c.close=Math.max(c.close,82)}c.rel='คู่ชีวิต';S.partner=c;c.st='dating';c.since=S.y;S.pg=c.sex===S.sex;fx({h:9});log(`เริ่มคบกับ${c.name}เป็นแฟน${how||''}${S.widow?' หลังจากเป็นหม้ายมาหลายปี':S.exes.some(x=>x.rel==='อดีตคนรัก')?' หลังจากโสดมาสักพัก':''}`,'big')}
+function offerC(c,verb,where,how){return{imp:1,q:`${verb}${c.name}${where} อายุ ${S.y-c.by} ปี เป็น${c.job} นิสัย${c.trait}`,o:[
+  {t:'ลองคบกัน',d:'เริ่มเป็นแฟน ยังไม่ต้องคิดไกล',f:()=>startDating(c,how)},
+  {t:'ขอเป็นเพื่อนกันก่อน',d:'อาจขยับเป็นแฟนทีหลังได้',f:()=>{c.rel='เพื่อน';c.from='ที่รู้จักกันตอนโต';c.close=R(55,70);S.friends.push(c);log(`เป็นเพื่อนกับ${c.name}ไปก่อน`,'')}},
+  {t:'ขอโฟกัสตัวเองก่อน',d:'ค่อยว่ากันอีกที',f:()=>fx({k:2})}]}}
+// เริ่มความสัมพันธ์ด้วยตัวเอง
+function datingApp(){
+ const y=S.y,app=y>=2555,txt=app?'เล่นแอปหาคู่':y>=2540?'แชทหาเพื่อนในห้องแชท':'ส่งจดหมายลงคอลัมน์หาเพื่อนในนิตยสาร';
+ S.money-=V(app?1500:300);
+ if(app&&y>=2558&&Math.random()<.08){const x=Math.min(Math.max(0,Math.round(S.money*.3)),V(300000));S.money-=x;fx({h:-10});log(`${txt}แล้วโดนแก๊งโรแมนซ์สแกมหลอกให้โอนเงิน เสียไป ${fmt(x)}`,'bad');return}
+ if(Math.random()<.3+S.lk/220)return offerC(newCand(),app?'แมตช์กับ':'ได้รู้จักกับ',app?'ในแอปหาคู่':'',` ที่รู้จักกันผ่าน${app?'แอปหาคู่':'การ'+txt}`);
+ fx({h:-2});log(`${txt}ทั้งเดือน ยังไม่เจอใครที่คุยถูกคอ`,'');
+}
+function introByFriend(){
+ const f=pick(S.friends.filter(x=>x.alive));if(!f)return;
+ if(Math.random()<.35+f.close/300+S.lk/400){f.close=cl(f.close+4);return offerC(newCand(),`${f.name}แนะนำให้รู้จักกับ`,'',` ที่${f.name}แนะนำให้รู้จัก`)}
+ log(`${f.name}พาไปกินข้าวกับเพื่อนของเพื่อน แต่ไม่ค่อยคลิกกัน`,'');
+}
+function friendToLove(){
+ const ps=partnerSex(),L=S.friends.filter(f=>f.alive&&Math.abs(f.by-S.by)<=8&&(f.sex===ps||(S.id&&['ไบเซ็กชวล','นอนไบนารี','ผู้หญิงข้ามเพศ','ผู้ชายข้ามเพศ'].includes(S.id))));
+ if(!L.length){log('ยังไม่มีเพื่อนที่รู้สึกพิเศษด้วย','');return}
+ return{imp:1,q:'อยากขยับความสัมพันธ์จากเพื่อนเป็นคนรักกับใคร',o:L.slice(0,5).map(f=>{const pc=Math.max(5,Math.min(90,Math.round(f.close*.75+(S.lk-50)/2.5)));return{t:`สารภาพกับ${f.name}`,d:`เพื่อนสมัย${f.from} · ${closeLab(f.close)[0]} · โอกาสสำเร็จราว ${pc}%`,f:()=>{
+  if(Math.random()*100<pc){S.friends=S.friends.filter(x=>x!==f);f.close=cl(f.close+10);startDating(f,' หลังจากเป็นเพื่อนกันมานาน')}
+  else{f.close=cl(f.close-20);fx({h:-8});log(`สารภาพรักกับ${f.name} แต่${f.name}ขอเป็นเพื่อนกันเหมือนเดิม บรรยากาศอึดอัดไปพักใหญ่`,'bad')}}}}).concat([{t:'ยังไม่กล้า',d:'',f:()=>{}}])};
+}
+// คลินิกความงาม
+function beautyChoice(){
+ const y=S.y,o=[{t:'ตัดผมทำสีร้านดังที่สยาม',d:`เสน่ห์ + ${fmt(V(1500))}`,f:()=>{S.money-=V(1500);S.lk=cl(S.lk+3);fx({h:2});log('ตัดผมทรงใหม่ เพื่อนทักว่าดูดีขึ้น','good')}},
+  {t:'ทำหน้าใส เลเซอร์',d:`เสน่ห์ + ${fmt(V(6000))}`,f:()=>{S.money-=V(6000);S.lk=cl(S.lk+5);fx({h:3});log('ไปคลินิกทำหน้าใส ผิวดูสดใสขึ้น','good')}}];
+ if(y>=2545)o.push({t:'ฉีดฟิลเลอร์หรือโบท็อกซ์',d:`เสน่ห์ ++ ${fmt(V(15000))} มีความเสี่ยงเล็กน้อย`,f:()=>{S.money-=V(15000);if(Math.random()<.12){S.lk=cl(S.lk-3);fx({h:-6,he:-2});log('ฉีดฟิลเลอร์แล้วหน้าบวมช้ำไปสองอาทิตย์','bad')}else{S.lk=cl(S.lk+9);fx({h:5});log('ฉีดฟิลเลอร์ หน้าดูเด็กลง มั่นใจขึ้นมาก','good')}}});
+ o.push({t:'ศัลยกรรมเสริมความงาม',d:`เสน่ห์ +++ ${fmt(V(90000))} เสี่ยงผิดหวัง`,f:()=>{S.money-=V(90000);const r=Math.random();if(r<.04){S.lk=cl(S.lk-8);medical(60000,1,'ศัลยกรรมแล้วติดเชื้อ ต้องผ่าแก้');fx({h:-10})}else if(r<.18){S.lk=cl(S.lk-2);fx({h:-8});log('ศัลยกรรมออกมาไม่เหมือนที่หวัง เสียใจมาก','bad')}else{S.lk=cl(S.lk+16);fx({h:8,c:2});log('ศัลยกรรมออกมาสวยหล่อตามที่หวัง มีคนทักไม่หยุด','good')}}});
+ o.push({t:'เปลี่ยนใจ',d:'',f:()=>{}});
+ return{imp:1,q:`พ.ศ. ${y} ${y>=2530?'คลินิกความงาม':'ร้านเสริมสวย'}มีบริการเหล่านี้ (เสน่ห์ตอนนี้ ${S.lk})`,o};
 }
 function relChoice(){
  const P=S.partner,a=S.age;
@@ -726,6 +763,9 @@ function ACTS(){const a=S.age,y=S.y,g=goldP(y);return[
  ...(y>=2562&&a>=13?[{t:'ทำคลิปลง TikTok',d:'อาจไวรัล หรือโดนทัวร์ลง',f:()=>{const r=Math.random();if(r<.15){fx({c:10,h:6,m:20000});log('คลิปไวรัลหลักล้านวิว มีแบรนด์ทักมาจ้างรีวิว','good')}else if(r<.3){fx({h:-7,c:-4});log('คลิปโดนทัวร์ลง คอมเมนต์ด่าเป็นพัน','bad')}else{fx({h:1});log('ทำคลิปลง TikTok ได้ยอดวิวนิดหน่อย','')}}}]:[]),
  ...(a>=20?[{t:S.home||S.rent?'ย้ายบ้าน ซื้อหรือเช่า':'หาที่อยู่ของตัวเอง',d:'บ้านเดี่ยว ทาวน์เฮาส์ คอนโด บ้านเช่า',f:()=>homeChoice()}]:[]),
  ...(a>=18&&S.y>=2505?[{t:S.car?'เปลี่ยนรถ หรือขายรถ':'ดูรถที่โชว์รูม',d:'รุ่นฮิตของปีนี้',f:()=>carChoice()}]:[]),
+ ...(a>=16?[{t:S.y>=2530?'เข้าคลินิกความงาม':'ไปร้านเสริมสวย',d:'เพิ่มเสน่ห์ มีโอกาสเจอคนมาจีบมากขึ้น',f:()=>beautyChoice()}]:[]),
+ ...(!S.partner&&a>=18?[{t:S.y>=2555?'เล่นแอปหาคู่':S.y>=2540?'แชทหาเพื่อนออนไลน์':'ลงคอลัมน์หาเพื่อนในนิตยสาร',d:'ลุ้นเจอคนถูกใจ',f:()=>datingApp()}]:[]),
+ ...(!S.partner&&a>=18&&S.friends.some(f=>f.alive)?[{t:'ให้เพื่อนแนะนำคนให้',d:'เพื่อนช่วยหาคู่',f:()=>introByFriend()},{t:'ขยับจากเพื่อนเป็นแฟน',d:'สารภาพกับเพื่อนสนิท',f:()=>friendToLove()}]:[]),
  ...(S.partner&&S.partner.st==='dating'&&a>=18?[{t:`ขอ${S.partner.name}แต่งงาน`,d:`คบกันมา ${Math.max(0,S.y-S.partner.since)} ปี · ${closeLab(S.partner.close)[0]}`,f:()=>proposeChoice()}]:[]),
  ...(a>=35&&S.children.concat(S.grand,S.great).some(c=>c.alive)?[{t:'โอนเงินหรือทรัพย์สินให้ลูกหลาน',d:'เลือกคนและสิ่งที่จะให้',f:()=>giveKin()}]:[]),
  ...(a>=55&&S.children.concat(S.grand).some(c=>c.alive&&S.y-c.by>=22)?[{t:'ขอเงินช่วยเหลือจากลูกหลาน',d:'ดูว่าใครพอช่วยได้',f:()=>askKin()}]:[]),
@@ -839,12 +879,9 @@ function getChoice(){
   {t:'ทำงานพาร์ทไทม์',d:'ได้เงินเก็บ',f:()=>fx({m:R(30000,60000),c:2})},{t:'มีความรักครั้งแรก',d:'ความสุข +',f:()=>fx({h:8})}]};
  if(!S.job&&!S.biz&&a<60)return jobChoice();
  const rq=relChoice();if(rq)return rq;
- if(a>=20&&a<=(S.widow||S.exes.length?62:45)&&!S.partner&&Math.random()<(S.lucky&&!S.soulUsed?(a<35?.4:.25):(a>45?.1:.22))){
-  const ps=partnerSex(),c=person('คู่ชีวิต',ps,S.y-a-R(-4,5),{job:pick(jobsAt(S.y)),money:V(R(20000,600000)),close:R(65,85)});
-  const where=pick(S.y>=2542?['สถานีรถไฟฟ้าสยาม','ร้านกาแฟแถวอารีย์','งานวิ่งสวนลุมฯ','ตลาดนัดจตุจักร','แอปหาคู่']:['ป้ายรถเมล์หน้าสยาม','งานวัดภูเขาทอง','ตลาดนัดสนามหลวง','โรงหนังเฉลิมกรุง']);
-  return{imp:1,q:`เจอ${c.name}ที่${where} อายุ ${S.y-c.by} ปี เป็น${c.job} นิสัย${c.trait}`,o:[
-  {t:'ลองคบกัน',d:'เริ่มเป็นแฟน ยังไม่ต้องคิดไกล',f:()=>{if(S.lucky&&!S.soulUsed){S.soulUsed=1;c.soul=1;c.close=Math.max(c.close,82)}S.partner=c;c.st='dating';c.since=S.y;S.pg=c.sex===S.sex;fx({h:9});log(`เริ่มคบกับ${c.name}เป็นแฟน${S.widow?' หลังจากเป็นหม้ายมาหลายปี':S.exes.some(x=>x.rel==='อดีตคนรัก')?' หลังจากโสดมาสักพัก':''}`,'big')}},
-  {t:'ขอโฟกัสตัวเองก่อน',d:'ค่อยว่ากันอีกที',f:()=>fx({k:2})}]}}
+ if(a>=20&&a<=(S.widow||S.exes.length?62:45)&&!S.partner&&Math.random()<(S.lucky&&!S.soulUsed?(a<35?.4:.25):(a>45?.1:.22))*(.75+S.lk/180)){
+  const where=pick(S.y>=2542?['สถานีรถไฟฟ้าสยาม','ร้านกาแฟแถวอารีย์','งานวิ่งสวนลุมฯ','ตลาดนัดจตุจักร']:['ป้ายรถเมล์หน้าสยาม','งานวัดภูเขาทอง','ตลาดนัดสนามหลวง','โรงหนังเฉลิมกรุง']);
+  return offerC(newCand(),`เจอ`,`ที่${where}`)}
  if(S.partner&&S.partner.st==='married'&&S.kids<3&&a<=44&&Math.random()<.2)return{imp:1,q:`คุยกับ${S.partner.name}เรื่องการมีลูก`,o:[
   {t:S.pg?'อยากมีลูก หรือรับเด็กมาเลี้ยง':'อยากมีลูก',d:'ความสุข + ค่าใช้จ่ายเพิ่ม',f:()=>{const k=person('ลูก',pick(['ชาย','หญิง']),S.pg?S.y-R(0,3):S.y,{close:R(80,95)});S.children.push(k);S.kids=S.children.length;S.partner.close=cl(S.partner.close+6);fx({h:8});log(S.pg?`ครอบครัวรับ${k.name}มาเป็นลูกคนที่ ${S.kids}`:`ลูก${k.sex==='ชาย'?'ชาย':'สาว'}คนที่ ${S.kids} ชื่อ ${k.name} เกิดที่โรงพยาบาลในกรุงเทพฯ`,'big')}},
   {t:'ยังไม่พร้อม',d:'ใช้ชีวิตสองคนต่อ',f:()=>fx({h:2})}]};
@@ -938,7 +975,7 @@ function render(){
    <div class="row"><span>บ้าน</span><span>${S.home?`${HOUSE[S.home.k].n}${S.home.owner?' (โอนให้'+S.home.owner+'แล้ว)':'ของตัวเอง'} ราคาตลาด ${fmt(S.home.v)}${S.home.left?` (ผ่อนอีก ${S.home.left} ปี)`:''}`:S.rent?`เช่า${RENT[S.rent.k].n} เดือนละ ${fmt(rp(S.rent.k,S.y))}`:S.parents.some(p=>p.alive)?'อยู่บ้านพ่อแม่':'อาศัยญาติอยู่'}</span></div>
    <div class="row"><span>ครอบครัว</span><span>${S.age<18?'อยู่กับพ่อแม่':fam}${S.married&&S.pg?' (จดทะเบียนตามกฎหมายสมรสเท่าเทียม)':''}</span></div>
   </div>
-  ${bar('ความสุข',S.h)}${bar('สุขภาพ',S.he,'y')}${bar('ความรู้',S.k,'p')}${bar('เส้นสาย',S.c,'p')}`;
+  ${bar('ความสุข',S.h)}${bar('สุขภาพ',S.he,'y')}${bar('ความรู้',S.k,'p')}${bar('เส้นสาย',S.c,'p')}${bar('เสน่ห์',S.lk||0,'y')}`;
  const fresh=S.log.slice(0,Math.max(0,S.log.length-S.mark)).filter(l=>l.c!=='news').reverse();
  $('#year').innerHTML=`<div class="story"><div class="sy"><b>พ.ศ. ${S.y}</b><span>${S.name} อายุ ${S.age} ปี${me&&S.y>=me?` · ตัวคุณจริง ${S.y-me} ปี`:''}</span></div>
   <ul class="st">${fresh.length?fresh.map(l=>`<li class="${l.c}">${l.t}</li>`).join(''):'<li>ปีนี้ชีวิตดำเนินไปอย่างเรียบๆ ในกรุงเทพฯ</li>'}</ul>
