@@ -176,7 +176,7 @@ function nameFor(sex,by){const u=usedNames();let pool=NAMES[sex][by<2525?'old':'
 const TR=['ใจดี','ขี้เล่น','ขยัน','ขี้อาย','ใจร้อน','ประหยัด','ชอบเที่ยว','ช่างคิด','อารมณ์ดี','ดื้อนิดๆ','รักสัตว์','ช่างพูด','ทำอาหารเก่ง','ติดเกม','รักการอ่าน','ชอบร้องเพลง'];
 const PJ=[[['พ่อค้าผลไม้ในตลาด','คนขับสามล้อ'],['แม่ค้าข้าวแกง','แม่ค้าขนมหวาน']],[['พนักงานบริษัท','พนักงานธนาคาร'],['พนักงานบริษัท','แม่บ้าน']],[['ข้าราชการ','ครู'],['ครู','พยาบาล']],[['เจ้าของร้านวัสดุก่อสร้าง','เจ้าของร้านทอง'],['เจ้าของร้านอาหาร','ช่วยดูแลกิจการ']],[['นักธุรกิจอสังหาฯ','ผู้บริหารบริษัท'],['ผู้บริหารบริษัท','นักธุรกิจ']]];
 const jobsAt=y=>jobs.filter(j=>y>=j[5]&&y<=j[6]).map(j=>j[1]);
-function person(rel,sex,by,o){const r=Object.assign({rel,sex,by,name:nameFor(sex,by),trait:shuffle(TR).slice(0,2).join(' · '),money:0,close:R(60,85),look:mkLook(),alive:true,job:'',kids:0},o||{});r.look.tilt=/ขี้อาย|ช่างคิด|รักการอ่าน/.test(r.trait)?6:/ช่างพูด|ขี้เล่น|อารมณ์ดี|ชอบร้องเพลง/.test(r.trait)?-5:0;return r}
+function person(rel,sex,by,o){const r=Object.assign({rel,sex,by,name:nameFor(sex,by),trait:shuffle(TR).slice(0,2).join(' · '),money:0,close:R(60,85),look:mkLook(),alive:true,job:'',kids:0,filial:Math.random()<.2},o||{});r.look.tilt=/ขี้อาย|ช่างคิด|รักการอ่าน/.test(r.trait)?6:/ช่างพูด|ขี้เล่น|อารมณ์ดี|ชอบร้องเพลง/.test(r.trait)?-5:0;return r}
 const closeLab=c=>c>=70?['ใกล้ชิดมาก','c4']:c>=45?['ใกล้ชิด','c3']:c>=25?['เริ่มห่างเหิน','c2']:['ห่างเหิน','c1'];
 // รูปเงาด้านข้าง (profile) ที่เปลี่ยนตามวัย: L=ลักษณะประจำตัว, pr=m/f/x
 function facePath(nx,ny,cx,cy){return `M40 70 C34 62 26 52 28 38 C30 22 46 14 58 18 C66 21 68 28 67 34 C67 37 69 39 69 41 C${nx-3} 43 ${nx} ${ny-2} ${nx} ${ny} C${nx-1} ${ny+2} ${nx-4} ${ny+2.4} 69 51.5 C71 53 70.6 54.2 69.6 55.2 C70.6 56.4 70.4 58.2 68.6 59.2 C68.4 61 ${cx+2} ${cy-1} ${cx} ${cy} C62 ${cy+1} 59.5 ${cy+1.2} 58 66.5 C58 72 60 78 64 85 L38 85 C40 77 41 73 40 70Z`}
@@ -352,13 +352,14 @@ function nextYear(){
   const withPar=!S.home&&!S.rent&&S.parents.some(p=>p.alive);
   let base=S.jail>0?V(20000):withPar?V(40000):V(a>=60?50000:60000)+rentC+(S.partner&&S.partner.st==='married'?V(20000):0);
   const life=Math.round(gross*(a>=60?.2:.38));
-  if(a>=60){const sup=S.children.filter(c=>c.alive&&y-c.by>=23&&c.close>=35).length*V(30000);if(sup){inc+=sup;gross+=sup}if(y>=2552){inc+=9000;gross+=9000}}
+  if(a>=60&&y>=2552){inc+=9000;gross+=9000}
+  if(a>=50)S.children.concat(S.grand).forEach(c=>{const ca=y-c.by;if(!c.alive||!c.filial||ca<23||!c.job||/เกษียณ/.test(c.job))return;if(!c.allow){c.allow=Math.round(V(R(2,8)*1000)*(c.close>=70?1.3:1));log(`${c.rel}${c.name}เริ่มส่งเงินให้ใช้ทุกเดือน เดือนละ ${fmt(c.allow)} โดยไม่ต้องขอ`,'good');fx({h:5})}c.allow=Math.round(c.allow*1.03);inc+=c.allow*12;gross+=c.allow*12;c.money-=c.allow*12;c.close=cl(c.close+1)});
   const c=base+life+kidsC;inc-=c;cost+=c}
  if(S.edu===2&&a<S.end&&S.fee){const t=V(S.fee);inc-=t;cost+=t}
  S.fin={gross,cost};
  // หนี้ท่วม: ขายทรัพย์สินใช้หนี้
  if(S.money+inc<-V(300000)&&S.car){S.money+=Math.round(S.car.v*.7);S.car=null;fx({h:-5});log('หนี้ท่วมหัว ต้องขายรถใช้หนี้','bad')}
- if(S.money+inc<-V(600000)&&S.home){S.money+=Math.round((S.home.v-S.home.bal)*.85);S.home=null;S.rent={k:'room'};fx({h:-10});log('ผ่อนบ้านไม่ไหว ต้องขายบ้านใช้หนี้ ย้ายกลับไปเช่าห้อง','bad')}
+ if(S.money+inc<-V(600000)&&S.home&&!S.home.owner){S.money+=Math.round((S.home.v-S.home.bal)*.85);S.home=null;S.rent={k:'room'};fx({h:-10});log('ผ่อนบ้านไม่ไหว ต้องขายบ้านใช้หนี้ ย้ายกลับไปเช่าห้อง','bad')}
  if(S.money+inc<-Math.max(V(1500000),gross*4)){S.money=-inc;fx({h:-15,c:-8});S.ins.health=false;log('ถูกเจ้าหนี้ฟ้องล้มละลาย ทรัพย์สินถูกยึด ต้องเริ่มต้นใหม่จากศูนย์','bad')}
  if(a===18){const g=V(S.fam.m);S.money+=g;log(`ครอบครัวให้ทุนตั้งตัว ${fmt(g)}`)}
  S.money+=inc;
@@ -597,11 +598,11 @@ function homeChoice(){
  for(const k in RENT){const H=RENT[k];if(y<(H.from||0)||(S.rent&&S.rent.k===k))continue;const m=rp(k,y);
   o.push({t:`เช่า${H.n}`,d:`ค่าเช่าเดือนละ ${fmt(m)}`,f:()=>{sellHome(true);S.rent={k};S.nearRail=!!H.rail;fx(H.fx);log(`ย้ายไปเช่า${H.n} เดือนละ ${fmt(m)}`,'')}})}
  if(S.parents.some(p=>p.alive)&&(S.home||S.rent))o.push({t:'กลับไปอยู่บ้านพ่อแม่',d:'ประหยัดมาก แต่ความเป็นส่วนตัวน้อย',f:()=>{sellHome(true);S.rent=null;S.withPar=1;fx({h:-3});bondAll(0,0,0,8);log('ย้ายกลับไปอยู่บ้านพ่อแม่','')}});
- if(S.home)o.push({t:`ขาย${HOUSE[S.home.k].n}`,d:`ราคาตลาดตอนนี้ ${fmt(S.home.v)} ติดหนี้บ้านอีก ${fmt(S.home.bal)}`,f:()=>{sellHome();S.rent={k:'room'};log('ย้ายไปเช่าห้องอยู่ก่อน','')}});
+ if(S.home&&!S.home.owner)o.push({t:`ขาย${HOUSE[S.home.k].n}`,d:`ราคาตลาดตอนนี้ ${fmt(S.home.v)} ติดหนี้บ้านอีก ${fmt(S.home.bal)}`,f:()=>{sellHome();S.rent={k:'room'};log('ย้ายไปเช่าห้องอยู่ก่อน','')}});
  o.push({t:'อยู่ที่เดิมต่อ',d:'ยังไม่ย้าย',f:()=>{}});
  return{imp:1,q:`พ.ศ. ${y} อยากอยู่ที่ไหน (ราคาโดยประมาณของยุคนั้น)`,o};
 }
-function sellHome(quiet){if(!S.home)return;const net=S.home.v-S.home.bal;S.money+=net;if(!quiet||net)log(`ขาย${HOUSE[S.home.k].n}ได้ ${fmt(S.home.v)} หักหนี้บ้านแล้วเหลือ ${fmt(net)}`,net>=0?'good':'bad');S.home=null}
+function sellHome(quiet){if(!S.home)return;if(S.home.owner){log(`ย้ายออกจากบ้านที่โอนให้${S.home.owner}แล้ว`,'');S.home=null;return}const net=S.home.v-S.home.bal;S.money+=net;if(!quiet||net)log(`ขาย${HOUSE[S.home.k].n}ได้ ${fmt(S.home.v)} หักหนี้บ้านแล้วเหลือ ${fmt(net)}`,net>=0?'good':'bad');S.home=null}
 // รถรุ่นฮิตตามยุค: [รุ่น, ตั้งแต่, ถึง, ราคา, ปีอ้างอิงราคา, ระดับ]
 const CARS=[['ดัทสัน บลูเบิร์ด',2500,2518,45000,2510,'ประหยัด'],['โตโยต้า โคโรน่า',2505,2530,60000,2512,'ครอบครัว'],['เมอร์เซเดส-เบนซ์ ซีดาน',2500,2539,180000,2512,'หรู'],['เมอร์เซเดส-เบนซ์ ซีคลาส',2540,9999,2200000,2555,'หรู'],['โตโยต้า โคโรลล่า รุ่นเก่า',2515,2530,110000,2522,'ครอบครัว'],['ดัทสัน ซันนี่',2515,2535,95000,2522,'ประหยัด'],['อีซูซุ กระบะ',2515,2531,80000,2522,'กระบะ'],['โตโยต้า โคโรลล่า (โฉมสามห่วง/โดเรม่อน)',2531,2544,420000,2535,'ครอบครัว'],['ฮอนด้า ซีวิค',2530,9999,480000,2535,'สปอร์ต'],['อีซูซุ ทีเอฟอาร์ มังกรทอง',2531,2545,300000,2535,'กระบะ'],['ฮอนด้า ซิตี้',2539,9999,420000,2540,'ประหยัด'],['โตโยต้า วีออส',2545,9999,520000,2545,'ประหยัด'],['ฮอนด้า แจ๊ส',2546,9999,560000,2547,'ประหยัด'],['โตโยต้า ไฮลักซ์ วีโก้',2547,2558,480000,2550,'กระบะ'],['อีซูซุ ดีแมคซ์',2545,9999,560000,2550,'กระบะ'],['นิสสัน มาร์ช',2553,2566,400000,2555,'อีโคคาร์'],['โตโยต้า ยาริส เอทีฟ',2560,9999,580000,2562,'อีโคคาร์'],['โตโยต้า แคมรี่',2545,9999,1500000,2555,'หรู'],['เอ็มจี แซดเอส อีวี',2562,9999,1050000,2563,'รถไฟฟ้า'],['บีวายดี ดอลฟิน',2566,9999,700000,2567,'รถไฟฟ้า'],['บีวายดี แอตโต 3',2565,9999,1100000,2566,'รถไฟฟ้า']];
 const carPrice=(c,y)=>Math.round(c[3]*Math.pow(y>c[4]?1.015:1.03,y-c[4]));
@@ -725,8 +726,39 @@ function ACTS(){const a=S.age,y=S.y,g=goldP(y);return[
  ...(y>=2562&&a>=13?[{t:'ทำคลิปลง TikTok',d:'อาจไวรัล หรือโดนทัวร์ลง',f:()=>{const r=Math.random();if(r<.15){fx({c:10,h:6,m:20000});log('คลิปไวรัลหลักล้านวิว มีแบรนด์ทักมาจ้างรีวิว','good')}else if(r<.3){fx({h:-7,c:-4});log('คลิปโดนทัวร์ลง คอมเมนต์ด่าเป็นพัน','bad')}else{fx({h:1});log('ทำคลิปลง TikTok ได้ยอดวิวนิดหน่อย','')}}}]:[]),
  ...(a>=20?[{t:S.home||S.rent?'ย้ายบ้าน ซื้อหรือเช่า':'หาที่อยู่ของตัวเอง',d:'บ้านเดี่ยว ทาวน์เฮาส์ คอนโด บ้านเช่า',f:()=>homeChoice()}]:[]),
  ...(a>=18&&S.y>=2505?[{t:S.car?'เปลี่ยนรถ หรือขายรถ':'ดูรถที่โชว์รูม',d:'รุ่นฮิตของปีนี้',f:()=>carChoice()}]:[]),
+ ...(a>=35&&S.children.concat(S.grand,S.great).some(c=>c.alive)?[{t:'โอนเงินหรือทรัพย์สินให้ลูกหลาน',d:'เลือกคนและสิ่งที่จะให้',f:()=>giveKin()}]:[]),
+ ...(a>=55&&S.children.concat(S.grand).some(c=>c.alive&&S.y-c.by>=22)?[{t:'ขอเงินช่วยเหลือจากลูกหลาน',d:'ดูว่าใครพอช่วยได้',f:()=>askKin()}]:[]),
  ...(a>=12?[{t:'เรียนภาษาอังกฤษ',d:`ความรู้ + ${fmt(V(5000))}`,f:()=>{fx({k:4,m:-5000});log('ลงเรียนภาษาอังกฤษตอนเย็น','good')}}]:[])
 ]}
+// ขอเงินลูกหลานยามแก่
+const BADT=/ใจร้อน|ดื้อนิดๆ|ติดเกม/;
+function askKin(){
+ const L=S.children.concat(S.grand).filter(c=>c.alive&&S.y-c.by>=22);
+ const o=L.slice(0,6).map(c=>{const asked=c.askY===S.y,burden=(c.kids>=2?1:0)+(c.money<V(50000)?1:0),cl2=closeLab(c.close)[0];
+  return{t:`ขอจาก${c.name} (${c.rel})`,d:`${cl2} · ${status(c,S.y-c.by)} · เงินเก็บราว ${fmt(Math.max(0,c.money))}${c.kids?` · มีลูก ${c.kids} คน`:''}${asked?' · ขอไปแล้วปีนี้':''}`,ok:!asked,f:()=>{
+   c.askY=S.y;let p=c.close/100+.1-(BADT.test(c.trait)?.3:0)-burden*.2;if(c.money<=0)p=0;
+   if(Math.random()<p){const amt=Math.max(V(3000),Math.round(Math.max(0,c.money)*(c.close>=70?R(15,30):R(5,15))/100));c.money-=amt;S.money+=amt;c.close=cl(c.close-2);fx({h:4});log(`${c.rel}${c.name}ให้เงินช่วย ${fmt(amt)}${c.close>=70?' แถมพาไปกินข้าวด้วย':''}`,'good')}
+   else{c.close=cl(c.close-6);fx({h:-5});log(`${c.rel}${c.name}${c.money<=0?'บอกว่าตัวเองก็ไม่มีเงินเหมือนกัน':burden?`ขอโทษที่ช่วยไม่ได้ เพราะมี${c.kids>=2?'ลูกต้องเลี้ยง':'หนี้ต้องผ่อน'}`:BADT.test(c.trait)?'ไม่ยอมให้ แถมบ่นว่ามาขอเงินอีกแล้ว':'บอกว่าเดือนนี้ช็อต ไว้คราวหน้า'}`,'bad')}}}});
+ o.push({t:'ไม่ขอดีกว่า',d:'พึ่งตัวเองไปก่อน',f:()=>{}});
+ return{imp:1,q:'อยากขอเงินช่วยเหลือจากใคร (ยิ่งใกล้ชิดยิ่งมีโอกาสได้ แต่ถ้าโดนปฏิเสธจะห่างกันลง)',o};
+}
+// โอนเงินหรือทรัพย์สินให้ลูกหลาน
+function giveKin(){
+ const L=S.children.concat(S.grand,S.great).filter(c=>c.alive);
+ const o=L.slice(0,7).map(c=>({t:`ให้${c.name} (${c.rel})`,d:`อายุ ${S.y-c.by} ปี · ${closeLab(c.close)[0]} · เงินเก็บ ${fmt(Math.max(0,c.money))}`,f:()=>giveWhat(c)}));
+ o.push({t:'ยังไม่ให้ใคร',d:'เก็บไว้ก่อน',f:()=>{}});
+ return{imp:1,q:'อยากโอนเงินหรือทรัพย์สินให้ใคร',o};
+}
+function giveWhat(c){
+ const o=[],bump=(amt,txt,cl2)=>{c.close=cl(c.close+cl2);fx({h:cl2>=10?6:3});log(`${txt}ให้${c.rel}${c.name}${amt?` มูลค่า ${fmt(amt)}`:''} ${c.close>=70?c.name+'ซึ้งใจจนน้ำตาซึม':c.name+'ขอบคุณมาก'}`,'good')};
+ if(S.money>0)[10,25,50].forEach(pc=>{const amt=Math.round(S.money*pc/100);o.push({t:`โอนเงิน ${pc}% ของเงินเก็บ`,d:fmt(amt),f:()=>{S.money-=amt;c.money+=amt;bump(amt,'โอนเงิน',pc>=50?12:pc>=25?8:5)}})});
+ if(S.gold>0)o.push({t:`ให้ทองคำ ${S.gold} บาท`,d:`มูลค่าราว ${fmt(goldP(S.y)*S.gold)}`,f:()=>{const v=goldP(S.y)*S.gold;c.money+=v;S.gold=0;bump(v,'มอบทองคำ',8)}});
+ if(S.car)o.push({t:`ยก${S.car.n}ให้`,d:`มูลค่าราว ${fmt(S.car.v)}${S.car.left?' (ผ่อนต่อเอง)':''}`,f:()=>{const v=S.car.v;c.money+=v;S.car=null;bump(v,'ยกรถ',7)}});
+ if(S.home&&!S.home.owner)o.push({t:`โอน${HOUSE[S.home.k].n}ให้`,d:`ราคาตลาด ${fmt(S.home.v)} ยังอยู่อาศัยต่อได้${S.home.bal?` (ติดหนี้บ้าน ${fmt(S.home.bal)})`:''}`,f:()=>{S.home.owner=c.name;bump(S.home.v-S.home.bal,`โอนโฉนด${HOUSE[S.home.k].n}`,15)}});
+ if(!o.length)o.push({t:'ตอนนี้ไม่มีอะไรจะให้',d:'',f:()=>{}});
+ o.push({t:'เปลี่ยนใจ',d:'ยังไม่ให้',f:()=>{}});
+ return{imp:1,q:`จะให้อะไร${c.name}`,o};
+}
 function doAct(i){
  if(!S||!S.alive||S.ap<=0||(pending&&(pending.imp||pending.sub)))return;const a=ACTS()[i];if(!a||a.ok===false)return;
  S.ap--;const r=a.f();
@@ -845,7 +877,7 @@ function die(){
  log(`จากไปอย่างสงบในวัย ${S.age} ปี เมื่อ พ.ศ. ${S.y} ที่บ้านในเขต${S.d[0]} รายล้อมด้วยคนที่รัก`,'big');
  const avg=Math.round(S.hs/Math.max(1,S.ys));
  S.title=avg>=75?'ชีวิตดีมากๆ':avg>=60?'ชีวิตที่อบอุ่น':avg>=45?'ชีวิตที่มีขึ้นมีลง':'ชีวิตที่สู้มาตลอด';
- S.avg=avg;S.worth=S.money+(S.home?S.home.v-S.home.bal:0)+(S.car?S.car.v:0);
+ S.avg=avg;S.worth=S.money+(S.home&&!S.home.owner?S.home.v-S.home.bal:0)+(S.car?S.car.v:0);
  try{const p=JSON.parse(localStorage.getItem('bkk-lives')||'[]');p.unshift({n:S.name,d:S.d[0],by:S.by,dy:S.y,t:S.title});localStorage.setItem('bkk-lives',JSON.stringify(p.slice(0,8)))}catch(e){}
  stopAuto();render();
 }
@@ -857,7 +889,7 @@ function prow(p){const alive=p.alive,pa=(alive?S.y:p.dy||S.y)-p.by,cl2=closeLab(
  const deep=p.rel==='คู่ชีวิต'||p.rel==='ลูก'||p.rel==='หลาน'||p.rel==='เหลน';
  const rl=p.rel==='ญาติ'?p.sub:p.rel==='คู่ชีวิต'?({dating:'แฟน',break:'แฟน (ห่างกันอยู่)',engaged:'คู่หมั้น',married:S.pg&&!S.married?'คู่ชีวิต':'คู่สมรส'}[p.st]||'คู่ชีวิต'):p.rel==='อดีตคนรัก'?(p.div?'อดีตคู่สมรส':'อดีตแฟน'):p.rel==='ลูก'&&p.withEx?'ลูก (อยู่กับอีกฝ่าย)':p.rel;
  const sub=!alive?`จากไปเมื่อ พ.ศ. ${p.dy} อายุ ${pa} ปี`:p.rel==='อดีตคนรัก'?`อายุ ${pa} ปี · แยกทางกันแล้ว`:`อายุ ${pa} ปี · ${status(p,pa)}${p.parent?` · ลูกของ${p.parent}`:''}`;
- const det=alive&&p.rel!=='อดีตคนรัก'?`<div class="pd">${deep?`นิสัย${p.trait}${pa>=18?` · เงินเก็บ <span class="money">${fmt(p.money)}</span>`:''}<br>`:''}<span class="rel ${cl2[1]}">${cl2[0]}</span></div>`:'';
+ const det=alive&&p.rel!=='อดีตคนรัก'?`<div class="pd">${p.allow?`<b>ส่งเงินให้ทุกเดือน ${fmt(p.allow)}</b><br>`:''}${deep?`นิสัย${p.trait}${pa>=18?` · เงินเก็บ <span class="money">${fmt(p.money)}</span>`:''}<br>`:''}<span class="rel ${cl2[1]}">${cl2[0]}</span></div>`:'';
  return `<div class="pp"><div class="av${alive?'':' dead'}">${avatar(p.look,Math.max(0,pa),prOf(p),status(p,pa))}</div><div><div class="pn">${p.name} <span class="tag">${rl}</span>${p.star?' <span class="tag c">คนดัง</span>':''}</div><div class="pd">${sub}${p.star?`<br>ชื่อในวงการ "${p.stage}"`:''}${p.from&&!p.star?` · เพื่อนสมัย${p.from}`:''}</div>${det}</div></div>`}
 function renderFamily(){
  const g=(t,a)=>a.length?`<div class="fh">${t}</div>${a.map(prow).join('')}`:'';
@@ -891,7 +923,7 @@ function render(){
    <div class="row"><span>ธุรกิจ</span><span>${S.biz?`${S.biz[0]} (ปีที่ ${S.bizy})`:'ยังไม่มี'}</span></div>
    <div class="row"><span>เงินเก็บ</span><span class="money">${fmt(S.money)}</span></div>
    <div class="row"><span>รถและประกัน</span><span>${[S.car?`${S.car.n}${S.car.ins?" (ประกันชั้น 1)":" (ประกันชั้น 3)"}${S.car.left?` ผ่อนอีก ${S.car.left} ปี`:''}`:"",S.ins.health?"ประกันสุขภาพ":""].filter(Boolean).join(" · ")||"ยังไม่มี"}</span></div>
-   <div class="row"><span>บ้าน</span><span>${S.home?`${HOUSE[S.home.k].n}ของตัวเอง ราคาตลาด ${fmt(S.home.v)}${S.home.left?` (ผ่อนอีก ${S.home.left} ปี)`:''}`:S.rent?`เช่า${RENT[S.rent.k].n} เดือนละ ${fmt(rp(S.rent.k,S.y))}`:S.parents.some(p=>p.alive)?'อยู่บ้านพ่อแม่':'อาศัยญาติอยู่'}</span></div>
+   <div class="row"><span>บ้าน</span><span>${S.home?`${HOUSE[S.home.k].n}${S.home.owner?' (โอนให้'+S.home.owner+'แล้ว)':'ของตัวเอง'} ราคาตลาด ${fmt(S.home.v)}${S.home.left?` (ผ่อนอีก ${S.home.left} ปี)`:''}`:S.rent?`เช่า${RENT[S.rent.k].n} เดือนละ ${fmt(rp(S.rent.k,S.y))}`:S.parents.some(p=>p.alive)?'อยู่บ้านพ่อแม่':'อาศัยญาติอยู่'}</span></div>
    <div class="row"><span>ครอบครัว</span><span>${S.age<18?'อยู่กับพ่อแม่':fam}${S.married&&S.pg?' (จดทะเบียนตามกฎหมายสมรสเท่าเทียม)':''}</span></div>
   </div>
   ${bar('ความสุข',S.h)}${bar('สุขภาพ',S.he,'y')}${bar('ความรู้',S.k,'p')}${bar('เส้นสาย',S.c,'p')}`;
